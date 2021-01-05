@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name = "description" content = "drawing">
+    <title> Drawing Website </title>
+  </head>
+
+  <body>
+    <canvas id="myCanvas" width="1200" height="500"
+      style="border:1px solid #000000;" onmousemove= "test(event)">
+      Your browser does not support the canvas element.
+    </canvas>
+    <style>
+      .button {
+      border: none;
+      border-radius: 8px;
+      color: white;
+      padding: 5px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      }
+
+      .blue_color {background-color: #008bf5;}
+      .green_color {background-color: #0ac235;}
+      .black_color {background-color: #000000;}
+      .red_color {background-color: #de0404;}
+      .yellow_color {background-color: #e6de0b;}
+      .eraser {background-color: #f576b3;}
+      .selected {background-color: #ffffff; color: black; border: 2px solid black;}
+    </style>
+    <p></p>
+    <button class = "button blue_color" onclick="blue()">blue</button>
+    <button class="button green_color" onclick="green()">green</button>
+    <button class="button black_color" onclick="black()">black</button>
+    <button class="button red_color" onclick="red()">red</button>
+    <button class="button yellow_color" onclick="yellow()">yellow</button>
+    <button class="button eraser" onclick="erase()">erase</button>
+    <button class="button selected" id="selector">selected</button>
+    <script src = "index.js"> </script>
+  </body>
+
+</html>
