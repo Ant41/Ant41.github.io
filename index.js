@@ -4,6 +4,9 @@ var ctx = canvas.getContext("2d");
 var canvasBack = document.getElementById("CanvasBack");
 var ctxBack = canvasBack.getContext("2d");
 var background;
+
+var video = document.getElementById('video');
+
 //background.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
 
 // background.onload = function(){
@@ -13,6 +16,52 @@ var background;
 ctx.strokeStyle = "#000000"; //default
 ctx.fillStyle = "#000000"; //default
 ctx.lineWidth = 1; //default
+
+var photoTaken = false;
+var justTurnedOn = 1;
+
+function takePhoto(event){
+  if (justTurnedOn == 2){
+    ctxBack.drawImage(video, 0, 0);
+    justTurnedOn = 1;
+    video = document.querySelector('video');
+    const mediaStream = video.srcObject;
+    const tracks = mediaStream.getTracks();
+    tracks[0].stop();
+  }
+
+  else if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && justTurnedOn == 1) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+          //video.src = window.URL.createObjectURL(stream);
+            //video.play();
+            video.srcObject = stream;
+            justTurnedOn = 2;
+      });
+    }
+}
+
+// function takePhoto(event) {
+//   if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && photoTaken == false) {
+//     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+//         //video.src = window.URL.createObjectURL(stream);
+//         video.srcObject = stream;
+//         video.play();
+//         ctxBack.drawImage(video, 0, 0);
+//         photoTaken = true;
+//     });
+//   }
+//   else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && photoTaken == true) {
+//     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+//         //video.src = window.URL.createObjectURL(stream);
+//         video.srcObject = stream;
+//         video.pause();
+//         ctxBack.drawImage(video, 0, 0);
+//         photoTaken = false;
+//         console.log("here");
+//     });
+//   }
+//
+// }
 
 function test(event){
 
@@ -137,8 +186,6 @@ function uploading(event){
   }
   reader.readAsDataURL(file);
 }
-
-var backgroundWhite;
 
 function clearBack() {
   ctxBack.clearRect(0,0,canvasBack.width,canvasBack.height);
