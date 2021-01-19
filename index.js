@@ -171,12 +171,12 @@ function uploading(event){
       background = new Image();
       background.src = e.target.result;
       background.onload = function(ev) {
-        if(background.height > 650){
+        if(background.height >= 650){
           background.height = 650;
           canvas.height = background.height;
           canvasBack.height = background.height;
         }
-        if (background.width > 1200){
+        if (background.width >= 1200){
           background.width = 1200;
           canvas.width = background.width;
           canvasBack.width = background.width;
