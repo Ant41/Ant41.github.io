@@ -7,6 +7,34 @@
   </head>
 
   <body>
+    <div class="dropdown">
+      <button class="dropbtn" id="tool select">Tools</button>
+      <div class="dropdown-content">
+        <button type="button" onclick="penSwitch()"> pen</button>
+        <button type="button" onclick="rectSwitch()"> rectangle</button>
+        <button type="button" onclick="circSwitch()"> circle</button>
+        <button type="button" onclick="straightSwitch()"> straight line</button>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="dropbtn" id="Brush Size">Brush Size</button>
+      <div class="dropdown-content">
+        <button type="button" onclick="fineMode()"> fine</button>
+        <button type="button" onclick="normalMode()"> normal</button>
+        <button type="button" onclick="thickMode()"> thick</button>
+      </div>
+    </div>
+    <button class = "button blue_color" onclick="blue()">blue</button>
+    <button class="button green_color" onclick="green()">green</button>
+    <button class="button black_color" onclick="black()">black</button>
+    <button class="button red_color" onclick="red()">red</button>
+    <button class="button yellow_color" onclick="yellow()">yellow</button>
+    <button class="button eraser" onclick="erase()">erase</button>
+    <button class="button selected" id="selector">selected</button>
+    <input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;">
+    <button class="button clearImg" onclick="clearBack()">Clear Background</button>
+    <button class="button clearImg" onclick="clearInk()">Clear Ink</button>
+    <p></p>
     <canvas id="CanvasBack" width="1200" height="500"
       style="border:1px solid #000000; position:absolute; z-index: -1">
       Your browser does not support the canvas element.
@@ -39,7 +67,7 @@
       .red_color {background-color: #de0404;}
       .yellow_color {background-color: #e6de0b;}
       .eraser {background-color: #f576b3;}
-      .selected {background-color: #ffffff; color: black; border: 2px solid black;}
+      .selected {background-color: #dedede; color: black; border: 2px solid black;}
       .upload {background-color: #ffffff; color: black; border: 2px solid black;}
       .clearImg {background-color: #ffffff; color: black; border: 2px solid black;}
 
@@ -84,37 +112,8 @@
         background-color: #9da0a1;
       }
     </style>
-    <p></p>
-    <div class="dropdown">
-      <button class="dropbtn" id="tool select">Tools</button>
-      <div class="dropdown-content">
-        <button type="button" onclick="penSwitch()"> pen</button>
-        <button type="button" onclick="rectSwitch()"> rectangle</button>
-        <button type="button" onclick="circSwitch()"> circle</button>
-        <button type="button" onclick="straightSwitch()"> straight line</button>
-      </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" id="Brush Size">Brush Size</button>
-      <div class="dropdown-content">
-        <button type="button" onclick="fineMode()"> fine</button>
-        <button type="button" onclick="normalMode()"> normal</button>
-        <button type="button" onclick="thickMode()"> thick</button>
-      </div>
-    </div>
-    <button class = "button blue_color" onclick="blue()">blue</button>
-    <button class="button green_color" onclick="green()">green</button>
-    <button class="button black_color" onclick="black()">black</button>
-    <button class="button red_color" onclick="red()">red</button>
-    <button class="button yellow_color" onclick="yellow()">yellow</button>
-    <button class="button eraser" onclick="erase()">erase</button>
-    <button class="button selected" id="selector">selected</button>
-    <input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;">
-    <button class="button upload"><label for="file" style="cursor: pointer;">Upload</label></button>
-    <button class="button clearImg" onclick="clearBack()">Clear Background</button>
-    <button class="button clearImg" onclick="clearInk()">Clear Ink</button>
     <button id="snap"class="button clearImg" onclick="takePhoto(event)">Take Photo</button>
-    <p></p>
+    <button class="button upload"><label for="file" style="cursor: pointer;">Upload Photo</label></button>
     <video id="video" width="1200" height="500" style="position:absolute; z-index: -2" autoplay></video>
     <script src = "index.js"> </script>
   </body>
