@@ -208,15 +208,15 @@ var part1 = 0;
 var part2 = 0;
 
 function firstPoint(){
-  x1 = event.clientX;
-  y1 = event.clientY;
+  x1 = event.offsetX; //clientX
+  y1 = event.offsetY;
   //console.log("x1 "+x1+" y1 "+y1);
   part1 = 1;
 }
 
 function secondPoint(){
-  x2 = event.clientX;
-  y2 = event.clientY;
+  x2 = event.offsetX;
+  y2 = event.offsetY;
   //console.log("x2 "+x2+" y2 "+y2);
   part2 = 1;
 }
@@ -271,15 +271,15 @@ var rad = 0;
 var circMode = false;
 
 function centerPoint(){
-  x1 = event.clientX;
-  y1 = event.clientY;
+  x1 = event.offsetX;
+  y1 = event.offsetY;
   //console.log("x1 "+x1+" y1 "+y1);
   part1 = 1;
 }
 
 function radiusLength(){
-  x2 = event.clientX;
-  y2 = event.clientY;
+  x2 = event.offsetX;
+  y2 = event.offsetY;
   //console.log("x2 "+x2+" y2 "+y2);
   part2 = 1;
   rad = Math.pow(Math.abs(x2-x1),2) + Math.pow(Math.abs(y2-y1),2);
