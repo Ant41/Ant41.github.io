@@ -7,46 +7,58 @@
   </head>
 
   <body>
-    <div class="dropdown">
-      <button class="dropbtn" id="tool select">Tools</button>
-      <div class="dropdown-content">
-        <button type="button" onclick="penSwitch()"> pen</button>
-        <button type="button" onclick="rectSwitch()"> rectangle</button>
-        <button type="button" onclick="circSwitch()"> circle</button>
-        <button type="button" onclick="straightSwitch()"> straight line</button>
+    <div class="navbar">
+
+      <div class="dropdown">
+        <button class="dropbtn" id="tool select">Tools</button>
+        <div class="dropdown-content">
+          <button type="button" onclick="penSwitch()"> pen</button>
+          <button type="button" onclick="rectSwitch()"> rectangle</button>
+          <button type="button" onclick="circSwitch()"> circle</button>
+          <button type="button" onclick="straightSwitch()"> straight line</button>
+        </div>
       </div>
-    </div>
-    <div class="dropdown">
-      <button class="dropbtn" id="Brush Size">Brush Size</button>
-      <div class="dropdown-content">
-        <button type="button" onclick="fineMode()"> fine</button>
-        <button type="button" onclick="normalMode()"> normal</button>
-        <button type="button" onclick="thickMode()"> thick</button>
+      <div class="dropdown">
+        <button class="dropbtn" id="Brush Size">Brush Size</button>
+        <div class="dropdown-content">
+          <button type="button" onclick="fineMode()"> fine</button>
+          <button type="button" onclick="normalMode()"> normal</button>
+          <button type="button" onclick="thickMode()"> thick</button>
+        </div>
       </div>
+      <button class = "button blue_color" onclick="blue()">blue</button>
+      <button class="button green_color" onclick="green()">green</button>
+      <button class="button black_color" onclick="black()">black</button>
+      <button class="button red_color" onclick="red()">red</button>
+      <button class="button yellow_color" onclick="yellow()">yellow</button>
+      <button class="button eraser" onclick="erase()">erase</button>
+      <button class="button selected" id="selector">selected</button>
+      <input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;">
+      <button class="button clearImg" onclick="clearBack()">Clear Background</button>
+      <button class="button clearImg" onclick="clearInk()">Clear Ink</button>
+
+
     </div>
-    <button class = "button blue_color" onclick="blue()">blue</button>
-    <button class="button green_color" onclick="green()">green</button>
-    <button class="button black_color" onclick="black()">black</button>
-    <button class="button red_color" onclick="red()">red</button>
-    <button class="button yellow_color" onclick="yellow()">yellow</button>
-    <button class="button eraser" onclick="erase()">erase</button>
-    <button class="button selected" id="selector">selected</button>
-    <input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;">
-    <button class="button clearImg" onclick="clearBack()">Clear Background</button>
-    <button class="button clearImg" onclick="clearInk()">Clear Ink</button>
+
     <p></p>
     <canvas id="CanvasBack" width="1200" height="500"
-      style="border:1px solid #000000; position:absolute; z-index: -1">
+      style="border:1px solid #000000; margin: 25px 0px 0px;position:absolute; z-index: -1">
       Your browser does not support the canvas element.
     </canvas>
 
     <canvas id="myCanvas" width="1200" height="500"
-      style="border:1px solid #000000; position:relative; z-index: 0; cursor: crosshair" onmousemove= "test(event)">
+      style="border:1px solid #000000; margin: 25px 0px 0px; position:relative; z-index: 0; cursor: crosshair" onmousemove= "test(event)">
       Your browser does not support the canvas element.
     </canvas>
 
-
     <style>
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+      }
 
       .button {
       border: none;
