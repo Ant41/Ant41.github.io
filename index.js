@@ -172,7 +172,7 @@ function uploading(event){
       background.src = e.target.result;
       background.onload = function(ev) {
         if(background.height >= 650){
-          background.height = 650;
+          //background.height = 650; //uncomment for fixed height limit
           canvas.height = background.height;
           canvasBack.height = background.height;
         }
