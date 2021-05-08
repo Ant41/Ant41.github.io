@@ -17,7 +17,7 @@ ctx.strokeStyle = "#000000"; //default
 ctx.fillStyle = "#000000"; //default
 ctx.lineWidth = 1; //default
 
-var photoTaken = false;
+//var photoTaken = false;
 var justTurnedOn = 1;
 
 function takePhoto(event){
@@ -28,6 +28,7 @@ function takePhoto(event){
     const mediaStream = video.srcObject;
     const tracks = mediaStream.getTracks();
     tracks[0].stop();
+    document.getElementById("video").style.visibility = "hidden";
   }
 
   else if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && justTurnedOn == 1) {
@@ -36,6 +37,7 @@ function takePhoto(event){
             //video.play();
             video.srcObject = stream;
             justTurnedOn = 2;
+            document.getElementById("video").style.visibility = "visible";
       });
     }
 }
@@ -64,7 +66,6 @@ function takePhoto(event){
 // }
 
 function test(event){
-
   if (penMode == true){
     draw(event);
   }
@@ -329,6 +330,7 @@ function turnOn(){
   y = event.offsetY;
   lastX = x;
   lastY = y;
+  console.log("works");
 }
 
 function turnOff(){
