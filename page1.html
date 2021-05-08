@@ -7,6 +7,7 @@
   </head>
 
   <body>
+
     <div class="navbar">
 
       <div class="dropdown">
@@ -40,18 +41,30 @@
 
     </div>
 
-    <p></p>
-    <canvas id="CanvasBack" width="1200" height="500"
-      style="border:1px solid #000000; margin: 25px 0px 0px;position:absolute; z-index: -1">
-      Your browser does not support the canvas element.
-    </canvas>
+    <div class="canvasStyle">
+      <canvas id="CanvasBack" width="1200" height="500"
+        style="position:absolute; z-index: -1">
+        Your browser does not support the canvas element.
+      </canvas>
 
-    <canvas id="myCanvas" width="1200" height="500"
-      style="border:1px solid #000000; margin: 25px 0px 0px; position:relative; z-index: 0; cursor: crosshair" onmousemove= "test(event)">
-      Your browser does not support the canvas element.
-    </canvas>
-
+      <canvas id="myCanvas" width="1200" height="500"
+        style="position:relative; z-index: 0; cursor: crosshair" onmousemove="test(event)">
+        Your browser does not support the canvas element.
+      </canvas>
+    </div>
     <style>
+
+    .uploadStyle {
+      position: relative;
+      top: 40px;
+    }
+
+    .canvasStyle {
+      position: relative;
+      text-align: center;
+      top: 30px;
+      border: 3px solid #73AD21;
+    }
 
     .navbar {
         position: fixed;
@@ -124,8 +137,10 @@
         background-color: #9da0a1;
       }
     </style>
-    <button id="snap"class="button clearImg" onclick="takePhoto(event)">Take Photo</button>
-    <button class="button upload"><label for="file" style="cursor: pointer;">Upload Photo</label></button>
+    <div class="uploadStyle">
+      <button id="snap"class="button clearImg" onclick="takePhoto(event)">Take Photo</button>
+      <button class="button upload"><label for="file" style="cursor: pointer;">Upload Photo</label></button>
+    </div>
     <p></p>
     <video id="video" width="1200" height="500" style="position:absolute; z-index: -2" autoplay></video>
     <script src = "index.js"> </script>
