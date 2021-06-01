@@ -422,8 +422,11 @@ function erase(){
 }
 
 function erasing(event){
-    myCanvas.addEventListener('mousedown', firstPoint);
-    myCanvas.addEventListener('mouseup', secondPoint);
+    x = event.offsetX;
+    y = event.offsetY;
+
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
 
     if(part1 == 1 && part2 == 0){
       xTemp = event.offsetX;
@@ -435,6 +438,8 @@ function erasing(event){
       lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
       lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
       document.getElementById("backButton").disabled = false;
+      document.removeEventListener('keydown', firstPoint);
+      document.removeEventListener('keyup', secondPoint);
       ctx.clearRect(x1,y1,x2-x1,y2-y1);
       // var imgData = ctx.getImageData(x1,y1,x2-x1,y2-y1);
       // var i;
