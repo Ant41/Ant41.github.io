@@ -3,6 +3,13 @@ var ctx = canvas.getContext("2d");
 
 var canvasBack = document.getElementById("CanvasBack");
 var ctxBack = canvasBack.getContext("2d");
+
+var canvasTemp = document.getElementById("CanvasTemp");
+var ctxTemp = canvasTemp.getContext("2d");
+
+var canvasSave = document.getElementById("CanvasSave");
+var ctxSave = canvasSave.getContext("2d");
+
 var background;
 
 var video = document.getElementById('video');
@@ -13,33 +20,96 @@ var video = document.getElementById('video');
 //     ctxBack.drawImage(background,0,0);
 // }
 
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("help");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
 ctx.strokeStyle = "#000000"; //default
 ctx.fillStyle = "#000000"; //default
 ctx.lineWidth = 1; //default
 
-//var photoTaken = false;
-var justTurnedOn = 1;
+document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
+document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+document.getElementById("backButton").disabled = true;
+
+var lastImageFront;
+var lastImageBack;
+
+function pageExtend(){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  document.getElementById("backButton").disabled = false;
+
+  canvas.height = canvas.height + 650;
+  canvasBack.height = canvasBack.height + 650;
+  canvasTemp.height = canvasTemp.height + 650;
+  canvasSave.height = canvasSave.height + 650;
+
+  ctx.putImageData(lastImageFront, 0, 0);
+  ctxBack.putImageData(lastImageBack, 0, 0);
+}
+
+function undo(){
+  ctx.putImageData(lastImageFront, 0, 0);
+  ctxBack.putImageData(lastImageBack, 0, 0);
+  document.getElementById("backButton").disabled = true;
+}
 
 function takePhoto(event){
-  if (justTurnedOn == 2){
-    ctxBack.drawImage(video, 0, 0);
-    justTurnedOn = 1;
-    video = document.querySelector('video');
-    const mediaStream = video.srcObject;
-    const tracks = mediaStream.getTracks();
-    tracks[0].stop();
-    document.getElementById("video").style.visibility = "hidden";
-  }
+  ctxBack.drawImage(video, 0, 0);
+  video = document.querySelector('video');
+  const mediaStream = video.srcObject;
+  const tracks = mediaStream.getTracks();
+  tracks[0].stop();
+  document.getElementById("video").style.visibility = "hidden";
+  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
+  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+}
 
-  else if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && justTurnedOn == 1) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-          //video.src = window.URL.createObjectURL(stream);
-            //video.play();
-            video.srcObject = stream;
-            justTurnedOn = 2;
-            document.getElementById("video").style.visibility = "visible";
-      });
-    }
+function cancel(event){
+  video = document.querySelector('video');
+  const mediaStream = video.srcObject;
+  const tracks = mediaStream.getTracks();
+  tracks[0].stop();
+  document.getElementById("video").style.visibility = "hidden";
+  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
+  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+}
+
+function startPhoto(event){
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+        //video.src = window.URL.createObjectURL(stream);
+        //video.play();
+        video.srcObject = stream;
+        document.getElementById("video").style.visibility = "visible";
+        document.getElementById("cameraButton").style.visibility = "visible"; //or "visible"
+        document.getElementById("cameraButtonCancel").style.visibility = "visible"; //or "visible"
+        numClicks = 2;
+    });
+  }
 }
 
 // function takePhoto(event) {
@@ -65,6 +135,47 @@ function takePhoto(event){
 //
 // }
 
+function saveImage(){
+  var imgDataBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  var imgDataFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  var imgData = ctxSave.getImageData(0, 0, canvas.width, canvas.height);
+  //console.log(imgData);
+  for (var i = 0; i < imgDataFront.data.length; i += 4) {
+    if(imgDataFront.data[i + 3] == 0) { //if the front is transparent, make the background visible for that pixel area
+      if(imgDataBack.data[i] == 0 && imgDataBack.data[i+1] == 0 && imgDataBack.data[i+2] == 0 && imgDataBack.data[i+3] == 0) { //if the entire canvas page is set to 0000, just put white for the pixel
+        imgData.data[i] = 255;
+        imgData.data[i+1] = 255;
+        imgData.data[i+2] = 255;
+        imgData.data[i+3] = 255;
+      }
+      else {
+        imgData.data[i] = imgDataBack.data[i];
+        imgData.data[i+1] = imgDataBack.data[i+1];
+        imgData.data[i+2] = imgDataBack.data[i+2];
+        imgData.data[i+3] = 255;
+      }
+    }
+    else { //front is drawn on
+      if(imgDataFront.data[i] == 0 && imgDataFront.data[i+1] == 0 && imgDataFront.data[i+2] == 0 && imgDataFront.data[i+3] == 0){
+        imgData.data[i] = 255;
+        imgData.data[i+1] = 255;
+        imgData.data[i+2] = 255;
+        imgData.data[i+3] = 255;
+      }
+      else {
+      imgData.data[i] = imgDataFront.data[i];
+      imgData.data[i+1] = imgDataFront.data[i+1];
+      imgData.data[i+2] = imgDataFront.data[i+2];
+      imgData.data[i+3] = 255;
+      }
+    }
+  }
+
+  ctxSave.putImageData(imgData, 0, 0);
+  var image = canvasSave.toDataURL("image/png").replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
+  window.location.href = image;
+}
+
 function test(event){
   if (penMode == true){
     draw(event);
@@ -89,8 +200,11 @@ function penSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  document.getElementById("tool select").innerHTML = "pen";
-  document.getElementById("selector").innerHTML = "select color";
+  document.getElementById("pen").style.border = "4px solid #2AD3D7";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
 }
 
 function rectSwitch(){
@@ -99,7 +213,11 @@ function rectSwitch(){
   rectMode = true;
   circMode = false;
   straightMode = false;
-  document.getElementById("tool select").innerHTML = "rectangle";
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "4px solid #2AD3D7";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
 }
 
 function circSwitch(){
@@ -108,7 +226,11 @@ function circSwitch(){
   rectMode = false;
   circMode = true;
   straightMode = false;
-  document.getElementById("tool select").innerHTML = "circle";
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "4px solid #2AD3D7";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
 }
 
 function straightSwitch(){
@@ -117,52 +239,86 @@ function straightSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = true;
-  document.getElementById("tool select").innerHTML = "straight line";
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "4px solid #2AD3D7";
+  document.getElementById("eraser").style.border = "0px";
 }
 
 function fineMode() {
   ctx.lineWidth = 1;
-  document.getElementById("Brush Size").innerHTML = "fine";
+  document.getElementById("fine").style.border = "4px solid #2AD3D7";
+  document.getElementById("normal").style.border = "0px";
+  document.getElementById("thick").style.border = "0px";
 }
 
 function normalMode() {
   ctx.lineWidth = 5;
-  document.getElementById("Brush Size").innerHTML = "normal";
+  document.getElementById("fine").style.border = "0px";
+  document.getElementById("normal").style.border = "4px solid #2AD3D7";
+  document.getElementById("thick").style.border = "0px";
 }
 
 function thickMode() {
   ctx.lineWidth = 10;
-  document.getElementById("Brush Size").innerHTML = "thick";
+  document.getElementById("fine").style.border = "0px";
+  document.getElementById("normal").style.border = "0px";
+  document.getElementById("thick").style.border = "4px solid #2AD3D7";
 }
 
 function blue(){
   ctx.strokeStyle = "#008bf5";
   ctx.fillStyle = "#008bf5";
-  document.getElementById("selector").innerHTML = "Blue";
+  document.getElementById("color").style.border = "4px solid #008bf5";
 }
 
 function green(){
   ctx.strokeStyle = "#0ac235";
   ctx.fillStyle = "#0ac235";
-  document.getElementById("selector").innerHTML = "Green";
+  document.getElementById("color").style.border = "4px solid #0ac235";
 }
 
 function red(){
   ctx.strokeStyle = "#de0404";
   ctx.fillStyle = "#de0404";
-  document.getElementById("selector").innerHTML = "Red";
+  document.getElementById("color").style.border = "4px solid #de0404";
 }
 
 function black(){
   ctx.strokeStyle = "#000000";
   ctx.fillStyle = "#000000";
-  document.getElementById("selector").innerHTML = "Black";
+  document.getElementById("color").style.border = "4px solid #000000";
 }
 
 function yellow(){
   ctx.strokeStyle = "#e6de0b";
   ctx.fillStyle = "#e6de0b";
-  document.getElementById("selector").innerHTML = "Yellow";
+  document.getElementById("color").style.border = "4px solid #e6de0b";
+}
+
+function pink(){
+  ctx.strokeStyle = "#EE37DB";
+  ctx.fillStyle = "#EE37DB";
+  document.getElementById("color").style.border = "4px solid #EE37DB";
+}
+
+function purple(){
+  ctx.strokeStyle = "#9700FF";
+  ctx.fillStyle = "#9700FF";
+  document.getElementById("color").style.border = "4px solid #9700FF";
+}
+
+function cyan(){
+  ctx.strokeStyle = "#00FFDF";
+  ctx.fillStyle = "#00FFDF";
+  document.getElementById("color").style.border = "4px solid #00FFDF";
+}
+
+function orange(){
+  ctx.strokeStyle = "#FFA100";
+  ctx.fillStyle = "#FFA100";
+  document.getElementById("color").style.border = "4px solid #FFA100";
 }
 
 function uploading(event){
@@ -176,11 +332,15 @@ function uploading(event){
           //background.height = 650; //uncomment for fixed height limit
           canvas.height = background.height;
           canvasBack.height = background.height;
+          canvasTemp.height = background.height;
+          canvasSave.height = background.height;
         }
         if (background.width >= 1200){
           background.width = 1200;
           canvas.width = background.width;
           canvasBack.width = background.width;
+          canvasTemp.width = background.width;
+          canvasSave.width = background.width;
         }
         ctxBack.drawImage(background,0,0);
       }
@@ -189,14 +349,24 @@ function uploading(event){
 }
 
 function clearBack() {
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  document.getElementById("backButton").disabled = false;
   ctxBack.clearRect(0,0,canvasBack.width,canvasBack.height);
   canvasBack.width = 1200;
   canvasBack.height = 500;
   canvas.width = 1200;
   canvas.height = 500;
+  canvasTemp.width = 1200;
+  canvasTemp.height = 500;
+  canvasSave.width = 1200;
+  canvasSave.height = 500;
 }
 
 function clearInk(){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  document.getElementById("backButton").disabled = false;
   ctx.clearRect(0,0,canvasBack.width,canvasBack.height);
 }
 
@@ -204,21 +374,36 @@ var x1;
 var x2;
 var y1;
 var y2;
+var xTemp;
+var yTemp;
 var eraseMode = false;
 var part1 = 0;
 var part2 = 0;
 
+/////////Use these if wanting to do mouse click instead
+// function firstPoint(){
+//   x1 = event.offsetX; //clientX
+//   y1 = event.offsetY;
+//   //console.log("x1 "+x1+" y1 "+y1);
+//   part1 = 1;
+// }
+//
+// function secondPoint(){
+//   x2 = event.offsetX;
+//   y2 = event.offsetY;
+//   //console.log("x2 "+x2+" y2 "+y2);
+//   part2 = 1;
+// }
+
 function firstPoint(){
-  x1 = event.offsetX; //clientX
-  y1 = event.offsetY;
-  //console.log("x1 "+x1+" y1 "+y1);
+  x1 = x;
+  y1 = y;
   part1 = 1;
 }
 
 function secondPoint(){
-  x2 = event.offsetX;
-  y2 = event.offsetY;
-  //console.log("x2 "+x2+" y2 "+y2);
+  x2 = x;
+  y2 = y;
   part2 = 1;
 }
 
@@ -229,15 +414,27 @@ function erase(){
   circMode = false;
   straightMode = false;
   erasing(event);
-  document.getElementById("selector").innerHTML = "Erase";
-  document.getElementById("tool select").innerHTML = "Eraser";
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "4px solid #2AD3D7";
 }
 
 function erasing(event){
     myCanvas.addEventListener('mousedown', firstPoint);
     myCanvas.addEventListener('mouseup', secondPoint);
 
-    if(part1 == 1 && part2 == 1){
+    if(part1 == 1 && part2 == 0){
+      xTemp = event.offsetX;
+      yTemp = event.offsetY;
+      document.addEventListener('mousemove', tempClearRect);
+    }
+
+    else if(part1 == 1 && part2 == 1){
+      lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+      lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      document.getElementById("backButton").disabled = false;
       ctx.clearRect(x1,y1,x2-x1,y2-y1);
       // var imgData = ctx.getImageData(x1,y1,x2-x1,y2-y1);
       // var i;
@@ -248,6 +445,8 @@ function erasing(event){
       //   imgData.data[i+3] = 255;
       // }
       // ctx.putImageData(imgData, x1, y1);
+      document.removeEventListener('mousemove', tempClearRect);
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
       part1 = 0;
       part2 = 0;
     }
@@ -256,15 +455,39 @@ function erasing(event){
 
 var rectMode = false;
 
-function rectDraw(event){
-  myCanvas.addEventListener('mousedown', firstPoint);
-  myCanvas.addEventListener('mouseup', secondPoint);
+function tempClearRect(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxTemp.beginPath();
+  ctxTemp.strokeRect(x1,y1,xTemp-x1,yTemp-y1);
+}
 
-  if(part1 == 1 && part2 == 1){
+function rectDraw(event){
+  x = event.offsetX;
+  y = event.offsetY;
+
+  document.addEventListener('keydown', firstPoint);
+  document.addEventListener('keyup', secondPoint);
+
+  if(part1 == 1 && part2 == 0){
+    xTemp = event.offsetX;
+    yTemp = event.offsetY;
+    document.addEventListener('mousemove', tempClearRect);
+  }
+
+  else if(part1 == 1 && part2 == 1){
+    document.removeEventListener('mousemove', tempClearRect);
+    document.removeEventListener('keydown', firstPoint);
+    document.removeEventListener('keyup', secondPoint);
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
     ctx.beginPath();
+    //console.log(x1+" "+y1+" "+x2+" "+y2);
     ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
     part1 = 0;
     part2 = 0;
+    ctx.closePath();
   }
 }
 
@@ -272,47 +495,102 @@ var rad = 0;
 var circMode = false;
 
 function centerPoint(){
-  x1 = event.offsetX;
-  y1 = event.offsetY;
+  x1 = x; //event.offsetX;
+  y1 = y; //event.offsetY;
   //console.log("x1 "+x1+" y1 "+y1);
   part1 = 1;
 }
 
 function radiusLength(){
-  x2 = event.offsetX;
-  y2 = event.offsetY;
+  x2 = x; //event.offsetX;
+  y2 = y; //event.offsetY;
   //console.log("x2 "+x2+" y2 "+y2);
   part2 = 1;
   rad = Math.pow(Math.abs(x2-x1),2) + Math.pow(Math.abs(y2-y1),2);
   rad = Math.sqrt(rad);
 }
 
+function radiusLengthTemp(){
+  //console.log("x2 "+x2+" y2 "+y2);
+  radTemp = Math.pow(Math.abs(xTemp-x1),2) + Math.pow(Math.abs(yTemp-y1),2);
+  radTemp = Math.sqrt(radTemp);
+}
+
+function tempClearCircle(){
+  radiusLengthTemp();
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxTemp.beginPath();
+  ctxTemp.arc(x1,y1,radTemp,0, 2*Math.PI);
+  ctxTemp.stroke();
+  ctxTemp.closePath();
+}
+
 function circDraw(event){
-  myCanvas.addEventListener('mousedown', centerPoint);
-  myCanvas.addEventListener('mouseup', radiusLength);
+  x = event.offsetX;
+  y = event.offsetY;
+
+  document.addEventListener('keydown', centerPoint);
+  document.addEventListener('keyup', radiusLength);
+  //console.log(part1+" "+part2);
 
   if(part1 == 1 && part2 == 1){
+    document.removeEventListener('mousemove', tempClearCircle);
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
     ctx.beginPath();
     ctx.arc(x1,y1,rad,0, 2*Math.PI);
     ctx.stroke();
+    ctx.closePath();
     part1 = 0;
     part2 = 0;
+    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  }
+
+  else if(part1 == 1 && part2 == 0){
+    xTemp = event.offsetX;
+    yTemp = event.offsetY;
+    document.addEventListener('mousemove', tempClearCircle);
   }
 }
 
 var straightMode = false;
 
+function tempClearLine(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxTemp.beginPath();
+  ctxTemp.moveTo(x1,y1);
+  ctxTemp.lineTo(xTemp,yTemp);
+  ctxTemp.stroke();
+  ctxTemp.closePath();
+}
+
 function straightDraw(event) {
-  myCanvas.addEventListener('mousedown', firstPoint);
-  myCanvas.addEventListener('mouseup', secondPoint);
+  x = event.offsetX;
+  y = event.offsetY;
+
+  document.addEventListener('keydown', firstPoint);
+  document.addEventListener('keyup', secondPoint);
 
   if(part1 == 1 && part2 == 1){
+    document.removeEventListener('mousemove', tempClearLine);
+    document.removeEventListener('keydown', firstPoint);
+    document.removeEventListener('keyup', secondPoint);
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
     ctx.beginPath();
     ctx.moveTo(x1,y1);
     ctx.lineTo(x2,y2);
     ctx.stroke();
     part1 = 0;
     part2 = 0;
+    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  }
+  else if(part1 == 1 && part2 == 0){
+    xTemp = event.offsetX;
+    yTemp = event.offsetY;
+    document.addEventListener('mousemove', tempClearLine);
   }
 }
 
@@ -322,26 +600,30 @@ var lastX;
 var lastY;
 var x;
 var y;
-var penMode = false;
+var penMode = true;
 
 function turnOn(){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  document.getElementById("backButton").disabled = false;
   drawOn = true;
-  x = event.offsetX;
-  y = event.offsetY;
-  lastX = x;
+  lastX = x; //reset the x and y when the mouse is reclicked
   lastY = y;
-  console.log("works");
+  //console.log("on");
 }
 
 function turnOff(){
   drawOn = false;
+  document.removeEventListener('keydown', turnOn);
+  document.removeEventListener('keyup', turnOff);
+  //console.log("off");
 }
 
 function draw(event){
   x = event.offsetX; //clientX
   y = event.offsetY;
-  document.addEventListener('keydown', turnOn);
-  document.addEventListener('keyup', turnOff);
+  document.addEventListener('keydown', turnOn); //activates when key is pressed only
+  document.addEventListener('keyup', turnOff); //activates when key is pressed only
 
   if (initialFlag == 1) { //initial postion
     lastX = x;
