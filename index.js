@@ -95,11 +95,41 @@ function previewCamera(){
 }
 
 function placePhotoCamera(){
-  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
-  ctxBack.putImageData(lastImageBack,0,0);
-  ctxBack.drawImage(video,x,y);
+  xAnchor = x;
+  yAnchor = y;
   document.removeEventListener('mousemove', previewCamera);
   document.removeEventListener('mousedown', placePhotoCamera);
+  document.getElementById("backButton").disabled = false;
+  document.addEventListener('mousemove', resizeCamera);
+  document.addEventListener('mousedown', finishPhotoResizeCamera);
+
+  // ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  // ctxBack.putImageData(lastImageBack,0,0);
+  // ctxBack.drawImage(video,x,y);
+  // document.removeEventListener('mousemove', previewCamera);
+  // document.removeEventListener('mousedown', placePhotoCamera);
+  // document.getElementById("backButton").disabled = false;
+  // video = document.querySelector('video');
+  // const mediaStream = video.srcObject;
+  // const tracks = mediaStream.getTracks();
+  // tracks[0].stop();
+}
+
+function resizeCamera(){
+  ctxTemp.putImageData(lastImageBack,0,0); //put the previous photos
+  xTemp = event.offsetX;
+  yTemp = event.offsetY;
+  width = Math.abs(xTemp-xAnchor);
+  height = Math.abs(yTemp-yAnchor);
+  ctxTemp.drawImage(video,xAnchor,yAnchor,width,height);
+}
+
+function finishPhotoResizeCamera(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxBack.putImageData(lastImageBack,0,0);
+  ctxBack.drawImage(video,xAnchor,yAnchor,width,height);
+  document.removeEventListener('mousemove', resizeCamera);
+  document.removeEventListener('mousedown', finishPhotoResizeCamera);
   document.getElementById("backButton").disabled = false;
   video = document.querySelector('video');
   const mediaStream = video.srcObject;
@@ -214,6 +244,9 @@ function test(event){
   if(straightMode == true){
     straightDraw(event);
   }
+  if(redoFileMode == true){
+    redoFile(event);
+  }
 }
 
 function penSwitch(){
@@ -222,11 +255,13 @@ function penSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = false;
+  redoFileMode = false;
   document.getElementById("pen").style.border = "4px solid #2AD3D7";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
 }
 
 function rectSwitch(){
@@ -235,11 +270,13 @@ function rectSwitch(){
   rectMode = true;
   circMode = false;
   straightMode = false;
+  redoFileMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "4px solid #2AD3D7";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
 }
 
 function circSwitch(){
@@ -248,11 +285,13 @@ function circSwitch(){
   rectMode = false;
   circMode = true;
   straightMode = false;
+  redoFileMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "4px solid #2AD3D7";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
 }
 
 function straightSwitch(){
@@ -261,11 +300,29 @@ function straightSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = true;
+  redoFileMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "4px solid #2AD3D7";
   document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
+}
+
+function oldFileSwitch(){
+  penMode = false;
+  eraseMode = false;
+  rectMode = false;
+  circMode = false;
+  straightMode = false;
+  straightMode = false;
+  redoFileMode = true;
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "4px solid #2AD3D7";
 }
 
 function fineMode() {
@@ -354,22 +411,47 @@ function uploading(event){
       background = new Image();
       background.src = e.target.result;
       background.onload = function(ev) {
+        ratio = background.height/background.width;
+        if (background.width >= 1200){
+          background.width = 200;
+          // background.width = 1200;
+          // canvas.width = background.width;
+          // canvasBack.width = background.width;
+          // canvasTemp.width = background.width;
+          // canvasSave.width = background.width;
+        }
         if(background.height >= 650){
+          background.height = background.width*ratio;
           //background.height = 650; //uncomment for fixed height limit
+          // canvas.height = background.height;
+          // canvasBack.height = background.height;
+          // canvasTemp.height = background.height;
+          // canvasSave.height = background.height;
+        }
+        document.addEventListener('mousemove', preview);
+        document.addEventListener('mousedown', placePhoto);
+      }
+  }
+  reader.readAsDataURL(file);
+}
+
+function uploadOldWork(){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  var file = event.target.files[0];
+  var reader  = new FileReader();
+  reader.onloadend = function (e) {
+      background = new Image();
+      background.src = e.target.result;
+      background.onload = function(ev) {
+        if(background.height >= 650){
           canvas.height = background.height;
           canvasBack.height = background.height;
           canvasTemp.height = background.height;
           canvasSave.height = background.height;
         }
-        if (background.width >= 1200){
-          background.width = 1200;
-          canvas.width = background.width;
-          canvasBack.width = background.width;
-          canvasTemp.width = background.width;
-          canvasSave.width = background.width;
-        }
-        document.addEventListener('mousemove', preview);
-        document.addEventListener('mousedown', placePhoto);
+        ctxBack.drawImage(background,0,0);
+        console.log("here");
       }
   }
   reader.readAsDataURL(file);
@@ -379,16 +461,37 @@ function preview(){
   ctxTemp.putImageData(lastImageBack,0,0); //put the previous photos
   x = event.offsetX;
   y = event.offsetY;
-  ctxTemp.drawImage(background,x,y);
+  ctxTemp.drawImage(background,x,y,background.width,background.height);
 }
 
 function placePhoto(){
-  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
-  ctxBack.putImageData(lastImageBack,0,0);
-  ctxBack.drawImage(background,x,y);
+  xAnchor = x;
+  yAnchor = y;
   document.removeEventListener('mousemove', preview);
   document.removeEventListener('mousedown', placePhoto);
   document.getElementById("backButton").disabled = false;
+  document.addEventListener('mousemove', resize);
+  document.addEventListener('mousedown', finishPhotoResize);
+}
+
+var width;
+var height;
+
+function resize(){
+  ctxTemp.putImageData(lastImageBack,0,0); //put the previous photos
+  xTemp = event.offsetX;
+  yTemp = event.offsetY;
+  width = Math.abs(xTemp-xAnchor);
+  height = width*ratio;
+  ctxTemp.drawImage(background,xAnchor,yAnchor,width,height);
+}
+
+function finishPhotoResize(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxBack.putImageData(lastImageBack,0,0);
+  ctxBack.drawImage(background,xAnchor,yAnchor,width,height);
+  document.removeEventListener('mousemove', resize);
+  document.removeEventListener('mousedown', finishPhotoResize);
 }
 
 function clearBack() {
@@ -499,7 +602,37 @@ function erasing(event){
       part2 = 0;
     }
 
-  }
+}
+
+var redoFileMode = false;
+
+function redoFile(event){
+    x = event.offsetX;
+    y = event.offsetY;
+
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+
+    if(part1 == 1 && part2 == 0){
+      xTemp = event.offsetX;
+      yTemp = event.offsetY;
+      document.addEventListener('mousemove', tempClearRect);
+    }
+
+    else if(part1 == 1 && part2 == 1){
+      lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+      lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      document.getElementById("backButton").disabled = false;
+      document.removeEventListener('keydown', firstPoint);
+      document.removeEventListener('keyup', secondPoint);
+      ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
+      document.removeEventListener('mousemove', tempClearRect);
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+      part1 = 0;
+      part2 = 0;
+    }
+
+}
 
 var rectMode = false;
 

@@ -39,6 +39,7 @@
     </ul>
 
     <ul class="vertical">
+      <li><input type="file"  accept="image/*" name="image" id="fileOld"  onchange="uploadOldWork()" style="display: none;"></li>
       <li><img title="Pen" id="pen" class="vertImage" src="photos/pen.png" onclick="penSwitch()" style="border: 4px solid #2AD3D7; cursor: pointer;"></li>
       <li><img title="Rectangle Tool" id="rectangle" class="vertImage" src="photos/rectangle.png" onclick="rectSwitch()" style="cursor: pointer;"></li>
       <li><img title="Circle Tool" id="circle" class="vertImage" src="photos/circle.png" onclick="circSwitch()" style="cursor: pointer;"></li>
@@ -47,10 +48,12 @@
       <li><img title="Normal Line" id="normal" class="vertImage" src="photos/normal.png" onclick="normalMode()" style="cursor: pointer;"></li>
       <li><img title="Thick Line" id="thick" class="vertImage" src="photos/thick.png" onclick="thickMode()" style="cursor: pointer;"></li>
       <li><img title="Eraser" id="eraser" class="vertImage" src="photos/eraser.png" onclick="erase()" style="cursor: pointer;"></li>
+      <li><label for="fileOld" style="cursor: pointer;"><img title="Upload previous work" class="vertImage" src="photos/uploadOldWork.png"></label></li>
+      <li><img title="Erase selected work on files" id="alterFile" class="vertImage" src="photos/alter.png" onclick="oldFileSwitch()" style="cursor: pointer;"></li>
     </ul>
 
     <div class="canvasStyle">
-      <video id="video" width="1200" height="500" style="position:absolute; z-index: -2" autoplay></video>
+      <video id="video" width="1200" height="500" style="position:fixed; z-index: 0" autoplay></video>
 
       <canvas id="CanvasSave" width="1200" height="500"
         style="border:1px solid #000000; position: absolute; z-index: -3; top: 0px; left: 0px">
@@ -74,7 +77,7 @@
 
     </div>
 
-    <div class="photoButton">
+    <div class="photoButton" style="position: fixed">
       <button style="background-color: #F83A3A; border-radius: 10px; cursor: pointer;" id="cameraButton" onclick="takePhoto(event)"> Take photo</button>
       <button style="border-radius: 10px; cursor: pointer;" id="cameraButtonCancel" onclick="cancel(event)"> Cancel</button>
     <div>
