@@ -78,14 +78,33 @@ function undo(){
 }
 
 function takePhoto(event){
-  ctxBack.drawImage(video, 0, 0);
+  video = document.querySelector('video');
+  document.getElementById("video").style.visibility = "hidden";
+  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
+  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+
+  document.addEventListener('mousemove', previewCamera);
+  document.addEventListener('mousedown', placePhotoCamera);
+}
+
+function previewCamera(){
+  ctxTemp.putImageData(lastImageBack,0,0); //put the previous photos
+  x = event.offsetX;
+  y = event.offsetY;
+  ctxTemp.drawImage(video,x,y);
+}
+
+function placePhotoCamera(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxBack.putImageData(lastImageBack,0,0);
+  ctxBack.drawImage(video,x,y);
+  document.removeEventListener('mousemove', previewCamera);
+  document.removeEventListener('mousedown', placePhotoCamera);
+  document.getElementById("backButton").disabled = false;
   video = document.querySelector('video');
   const mediaStream = video.srcObject;
   const tracks = mediaStream.getTracks();
   tracks[0].stop();
-  document.getElementById("video").style.visibility = "hidden";
-  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
-  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
 }
 
 function cancel(event){
@@ -99,6 +118,9 @@ function cancel(event){
 }
 
 function startPhoto(event){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  document.getElementById("backButton").disabled = false;
   if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
         //video.src = window.URL.createObjectURL(stream);
@@ -321,7 +343,11 @@ function orange(){
   document.getElementById("color").style.border = "4px solid #FFA100";
 }
 
+var background;
+
 function uploading(event){
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
   var file = event.target.files[0];
   var reader  = new FileReader();
   reader.onloadend = function (e) {
@@ -342,10 +368,27 @@ function uploading(event){
           canvasTemp.width = background.width;
           canvasSave.width = background.width;
         }
-        ctxBack.drawImage(background,0,0);
+        document.addEventListener('mousemove', preview);
+        document.addEventListener('mousedown', placePhoto);
       }
   }
   reader.readAsDataURL(file);
+}
+
+function preview(){
+  ctxTemp.putImageData(lastImageBack,0,0); //put the previous photos
+  x = event.offsetX;
+  y = event.offsetY;
+  ctxTemp.drawImage(background,x,y);
+}
+
+function placePhoto(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxBack.putImageData(lastImageBack,0,0);
+  ctxBack.drawImage(background,x,y);
+  document.removeEventListener('mousemove', preview);
+  document.removeEventListener('mousedown', placePhoto);
+  document.getElementById("backButton").disabled = false;
 }
 
 function clearBack() {
