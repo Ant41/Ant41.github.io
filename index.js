@@ -20,6 +20,33 @@ var video = document.getElementById('video');
 //     ctxBack.drawImage(background,0,0);
 // }
 
+///////////hot key section
+
+document.addEventListener('keydown', hotKey);
+
+function hotKey(){
+  key = event.keyCode;
+  //console.log(key);
+
+  if(key == 87){ //w
+    penSwitch();
+  }
+  if(key == 67){ //c
+    circSwitch();
+  }
+  if(key == 83){ //s
+    straightSwitch();
+  }
+  if(key == 82){ //r
+    rectSwitch();
+  }
+  if(key == 69){
+    erase();
+  }
+}
+
+
+/////////////pop up help section
 var modal = document.getElementById("myModal");
 
 // Get the button that opens the modal
@@ -45,6 +72,8 @@ window.onclick = function(event) {
   }
 }
 
+
+////////////initial settings
 ctx.strokeStyle = "#000000"; //default
 ctx.fillStyle = "#000000"; //default
 ctx.lineWidth = 1; //default
@@ -230,21 +259,35 @@ function saveImage(){
 
 function test(event){
   if (penMode == true){
+    document.removeEventListener('keydown', firstPoint);
+    document.removeEventListener('keyup', secondPoint);
+    document.removeEventListener('keydown', centerPoint);
+    document.removeEventListener('keyup', radiusLength);
     draw(event);
   }
   if(eraseMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
     erasing(event);
   }
   if(rectMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
     rectDraw(event);
   }
   if(circMode == true){
+    document.addEventListener('keydown', centerPoint);
+    document.addEventListener('keyup', radiusLength);
     circDraw(event);
   }
   if(straightMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
     straightDraw(event);
   }
   if(redoFileMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
     redoFile(event);
   }
 }
@@ -542,15 +585,19 @@ var part2 = 0;
 // }
 
 function firstPoint(){
-  x1 = x;
-  y1 = y;
-  part1 = 1;
+  if(event.key == "Alt"){
+    x1 = x;
+    y1 = y;
+    part1 = 1;
+  }
 }
 
 function secondPoint(){
-  x2 = x;
-  y2 = y;
-  part2 = 1;
+  if(event.key == "Alt"){
+    x2 = x;
+    y2 = y;
+    part2 = 1;
+  }
 }
 
 function erase(){
@@ -571,9 +618,6 @@ function erasing(event){
     x = event.offsetX;
     y = event.offsetY;
 
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-
     if(part1 == 1 && part2 == 0){
       xTemp = event.offsetX;
       yTemp = event.offsetY;
@@ -584,18 +628,7 @@ function erasing(event){
       lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
       lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
       document.getElementById("backButton").disabled = false;
-      document.removeEventListener('keydown', firstPoint);
-      document.removeEventListener('keyup', secondPoint);
       ctx.clearRect(x1,y1,x2-x1,y2-y1);
-      // var imgData = ctx.getImageData(x1,y1,x2-x1,y2-y1);
-      // var i;
-      // for (i = 0; i < imgData.data.length; i += 4) {
-      //   imgData.data[i] = 255;
-      //   imgData.data[i+1] = 255;
-      //   imgData.data[i+2] = 255;
-      //   imgData.data[i+3] = 255;
-      // }
-      // ctx.putImageData(imgData, x1, y1);
       document.removeEventListener('mousemove', tempClearRect);
       ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
       part1 = 0;
@@ -610,9 +643,6 @@ function redoFile(event){
     x = event.offsetX;
     y = event.offsetY;
 
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-
     if(part1 == 1 && part2 == 0){
       xTemp = event.offsetX;
       yTemp = event.offsetY;
@@ -623,8 +653,6 @@ function redoFile(event){
       lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
       lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
       document.getElementById("backButton").disabled = false;
-      document.removeEventListener('keydown', firstPoint);
-      document.removeEventListener('keyup', secondPoint);
       ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
       document.removeEventListener('mousemove', tempClearRect);
       ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
@@ -646,9 +674,6 @@ function rectDraw(event){
   x = event.offsetX;
   y = event.offsetY;
 
-  document.addEventListener('keydown', firstPoint);
-  document.addEventListener('keyup', secondPoint);
-
   if(part1 == 1 && part2 == 0){
     xTemp = event.offsetX;
     yTemp = event.offsetY;
@@ -657,8 +682,6 @@ function rectDraw(event){
 
   else if(part1 == 1 && part2 == 1){
     document.removeEventListener('mousemove', tempClearRect);
-    document.removeEventListener('keydown', firstPoint);
-    document.removeEventListener('keyup', secondPoint);
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
@@ -676,19 +699,23 @@ var rad = 0;
 var circMode = false;
 
 function centerPoint(){
-  x1 = x; //event.offsetX;
-  y1 = y; //event.offsetY;
-  //console.log("x1 "+x1+" y1 "+y1);
-  part1 = 1;
+  if(event.key == "Alt"){
+    x1 = x; //event.offsetX;
+    y1 = y; //event.offsetY;
+    //console.log("x1 "+x1+" y1 "+y1);
+    part1 = 1;
+  }
 }
 
 function radiusLength(){
-  x2 = x; //event.offsetX;
-  y2 = y; //event.offsetY;
-  //console.log("x2 "+x2+" y2 "+y2);
-  part2 = 1;
-  rad = Math.pow(Math.abs(x2-x1),2) + Math.pow(Math.abs(y2-y1),2);
-  rad = Math.sqrt(rad);
+  if(event.key == "Alt"){
+    x2 = x; //event.offsetX;
+    y2 = y; //event.offsetY;
+    //console.log("x2 "+x2+" y2 "+y2);
+    part2 = 1;
+    rad = Math.pow(Math.abs(x2-x1),2) + Math.pow(Math.abs(y2-y1),2);
+    rad = Math.sqrt(rad);
+  }
 }
 
 function radiusLengthTemp(){
@@ -709,10 +736,6 @@ function tempClearCircle(){
 function circDraw(event){
   x = event.offsetX;
   y = event.offsetY;
-
-  document.addEventListener('keydown', centerPoint);
-  document.addEventListener('keyup', radiusLength);
-  //console.log(part1+" "+part2);
 
   if(part1 == 1 && part2 == 1){
     document.removeEventListener('mousemove', tempClearCircle);
@@ -750,13 +773,8 @@ function straightDraw(event) {
   x = event.offsetX;
   y = event.offsetY;
 
-  document.addEventListener('keydown', firstPoint);
-  document.addEventListener('keyup', secondPoint);
-
   if(part1 == 1 && part2 == 1){
     document.removeEventListener('mousemove', tempClearLine);
-    document.removeEventListener('keydown', firstPoint);
-    document.removeEventListener('keyup', secondPoint);
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
@@ -784,20 +802,24 @@ var y;
 var penMode = true;
 
 function turnOn(){
-  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
-  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  document.getElementById("backButton").disabled = false;
-  drawOn = true;
-  lastX = x; //reset the x and y when the mouse is reclicked
-  lastY = y;
-  //console.log("on");
+  if(event.key == "Alt"){
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
+    drawOn = true;
+    lastX = x; //reset the x and y when the mouse is reclicked
+    lastY = y;
+    //console.log(event.key);
+  }
 }
 
 function turnOff(){
-  drawOn = false;
-  document.removeEventListener('keydown', turnOn);
-  document.removeEventListener('keyup', turnOff);
-  //console.log("off");
+  if(event.key == "Alt"){
+    drawOn = false;
+    document.removeEventListener('keydown', turnOn);
+    document.removeEventListener('keyup', turnOff);
+    //console.log("off");
+  }
 }
 
 function draw(event){
