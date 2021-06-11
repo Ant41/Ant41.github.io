@@ -78,8 +78,8 @@ ctx.strokeStyle = "#000000"; //default
 ctx.fillStyle = "#000000"; //default
 ctx.lineWidth = 1; //default
 
-document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
-document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+document.getElementById("cameraButton").style.display = "none"; //or "visible"
+document.getElementById("cameraButtonCancel").style.display = "none"; //or "visible"
 document.getElementById("backButton").disabled = true;
 
 var lastImageFront;
@@ -109,8 +109,8 @@ function undo(){
 function takePhoto(event){
   video = document.querySelector('video');
   document.getElementById("video").style.visibility = "hidden";
-  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
-  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+  document.getElementById("cameraButton").style.display = "none"; //or "visible"
+  document.getElementById("cameraButtonCancel").style.display = "none"; //or "visible"
 
   document.addEventListener('mousemove', previewCamera);
   document.addEventListener('mousedown', placePhotoCamera);
@@ -172,8 +172,8 @@ function cancel(event){
   const tracks = mediaStream.getTracks();
   tracks[0].stop();
   document.getElementById("video").style.visibility = "hidden";
-  document.getElementById("cameraButton").style.visibility = "hidden"; //or "visible"
-  document.getElementById("cameraButtonCancel").style.visibility = "hidden"; //or "visible"
+  document.getElementById("cameraButton").style.display = "none"; //or "visible"
+  document.getElementById("cameraButtonCancel").style.display = "none"; //or "visible"
 }
 
 function startPhoto(event){
@@ -186,8 +186,8 @@ function startPhoto(event){
         //video.play();
         video.srcObject = stream;
         document.getElementById("video").style.visibility = "visible";
-        document.getElementById("cameraButton").style.visibility = "visible"; //or "visible"
-        document.getElementById("cameraButtonCancel").style.visibility = "visible"; //or "visible"
+        document.getElementById("cameraButton").style.display = "inline"; //or "visible"
+        document.getElementById("cameraButtonCancel").style.display = "inline"; //or "visible"
         numClicks = 2;
     });
   }
