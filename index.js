@@ -255,6 +255,7 @@ function saveImage(){
   ctxSave.putImageData(imgData, 0, 0);
   var image = canvasSave.toDataURL("image/png").replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
   window.location.href = image;
+  ctxSave.clearRect(0,0,canvasTemp.width,canvasTemp.height);
 }
 
 function test(event){
