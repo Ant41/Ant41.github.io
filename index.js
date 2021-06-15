@@ -43,6 +43,9 @@ function hotKey(){
   if(key == 69){
     erase();
   }
+  if(key == 85){
+    undo();
+  }
 }
 
 
