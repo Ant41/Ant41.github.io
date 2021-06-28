@@ -20,6 +20,10 @@ var video = document.getElementById('video');
 //     ctxBack.drawImage(background,0,0);
 // }
 
+window.onbeforeunload = function(event) {
+  event.returnValue = "Are you sure you want to leave the page?";
+};
+
 ///////////hot key section
 
 document.addEventListener('keydown', hotKey);
