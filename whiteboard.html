@@ -35,6 +35,10 @@
         <li style="display: inline; cursor: pointer;"><img title="Save Photo" class="horizontalImage" src="photos/saveImage.png" onclick="saveImage()"></li>
         <li style="display: inline; cursor: pointer;"><button title="Undo Last Move" class="button" id="backButton" onclick="undo()">Undo</button></li>
         <li style="display: inline; cursor: pointer;"><img title="Extend Page" class="horizontalImage" src="photos/plus.png" onclick="pageExtend()"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Edit top layer" class="horizontalImage" id="top" src="photos/top.png" style="border: 4px solid #2AD3D7;" onclick="topDraw()"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Edit bottom layer" class="horizontalImage" id="bottom" src="photos/bottom.png" onclick="bottomDraw()"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Copy Drawing" class="horizontalImage" id="copyDrawing" src="photos/copy.png" onclick="copyDrawing()"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Move Drawing" class="horizontalImage" id="moveDrawing" src="photos/move.png" onclick="moveDrawing()"></li>
       </div>
     </ul>
 
@@ -61,7 +65,7 @@
       </canvas>
 
       <canvas id="CanvasBack" width="1200" height="500"
-        style="border:1px solid #000000; position:absolute; z-index: -2">
+        style="border:1px solid #000000; position:absolute; z-index: -1">
         Your browser does not support the canvas element.
       </canvas>
 

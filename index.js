@@ -20,6 +20,23 @@ var video = document.getElementById('video');
 //     ctxBack.drawImage(background,0,0);
 // }
 
+var topSheet = true;
+var bottomSheet = false;
+
+function topDraw(){
+  document.getElementById("top").style.border = "4px solid #2AD3D7";
+  document.getElementById("bottom").style.border = "0px";
+  topSheet = true;
+  bottomSheet = false;
+}
+
+function bottomDraw(){
+  document.getElementById("bottom").style.border = "4px solid #2AD3D7";
+  document.getElementById("top").style.border = "0px";
+  topSheet = false;
+  bottomSheet = true;
+}
+
 window.onbeforeunload = function(event) {
   event.returnValue = "Are you sure you want to leave the page?";
 };
@@ -91,6 +108,98 @@ document.getElementById("backButton").disabled = true;
 
 var lastImageFront;
 var lastImageBack;
+
+var moveDrawingMode = false;
+
+function moveDrawingMain(event){
+  x = event.offsetX;
+  y = event.offsetY;
+
+  if(part1 == 1 && part2 == 0){
+    xTemp = event.offsetX;
+    yTemp = event.offsetY;
+    document.addEventListener('mousemove', tempClearRect);
+  }
+
+  else if(part1 == 1 && part2 == 1){
+    document.removeEventListener('mousemove', tempClearRect);
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
+    if(topSheet == true){
+      imageToCopy = ctx.getImageData(x1, y1, x2-x1, y2-y1);
+      part1 = 0;
+      part2 = 0;
+      ctx.clearRect(x1,y1,x2-x1,y2-y1);
+      document.addEventListener('mousemove', previewImage);
+      document.addEventListener('mousedown', placeImage);
+    }
+    else {
+      imageToCopy = ctxBack.getImageData(x1, y1, x2-x1, y2-y1);
+      part1 = 0;
+      part2 = 0;
+      ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
+      document.addEventListener('mousemove', previewImage);
+      document.addEventListener('mousedown', placeImage);
+    }
+  }
+}
+
+var copyDrawingMode = false;
+var imageToCopy;
+
+function copyDrawingMain(event){
+  x = event.offsetX;
+  y = event.offsetY;
+
+  if(part1 == 1 && part2 == 0){
+    xTemp = event.offsetX;
+    yTemp = event.offsetY;
+    document.addEventListener('mousemove', tempClearRect);
+  }
+
+  else if(part1 == 1 && part2 == 1){
+    document.removeEventListener('mousemove', tempClearRect);
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    document.getElementById("backButton").disabled = false;
+    if(topSheet == true){
+      imageToCopy = ctx.getImageData(x1, y1, x2-x1, y2-y1);
+      part1 = 0;
+      part2 = 0;
+      document.addEventListener('mousemove', previewImage);
+      document.addEventListener('mousedown', placeImage);
+    }
+    else {
+      imageToCopy = ctxBack.getImageData(x1, y1, x2-x1, y2-y1);
+      part1 = 0;
+      part2 = 0;
+      document.addEventListener('mousemove', previewImage);
+      document.addEventListener('mousedown', placeImage);
+    }
+  }
+}
+
+function previewImage(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  x = event.offsetX;
+  y = event.offsetY;
+  ctxTemp.putImageData(imageToCopy,x,y);
+}
+
+function placeImage(){
+  if(topSheet == true){
+    ctx.putImageData(imageToCopy,x,y);
+  }
+  else {
+    ctxBack.putImageData(imageToCopy,x,y);
+  }
+  document.removeEventListener('mousemove', previewImage);
+  document.removeEventListener('mousedown', placeImage);
+  document.getElementById("backButton").disabled = false;
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+}
+
 
 function pageExtend(){
   lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
@@ -298,6 +407,16 @@ function test(event){
     document.addEventListener('keyup', secondPoint);
     redoFile(event);
   }
+  if(moveDrawingMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    moveDrawingMain(event);
+  }
+  if(copyDrawingMode == true){
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    copyDrawingMain(event);
+  }
 }
 
 function penSwitch(){
@@ -307,12 +426,16 @@ function penSwitch(){
   circMode = false;
   straightMode = false;
   redoFileMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
   document.getElementById("pen").style.border = "4px solid #2AD3D7";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
   document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
 function rectSwitch(){
@@ -322,12 +445,16 @@ function rectSwitch(){
   circMode = false;
   straightMode = false;
   redoFileMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "4px solid #2AD3D7";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
   document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
 function circSwitch(){
@@ -337,12 +464,16 @@ function circSwitch(){
   circMode = true;
   straightMode = false;
   redoFileMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "4px solid #2AD3D7";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
   document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
 function straightSwitch(){
@@ -352,12 +483,16 @@ function straightSwitch(){
   circMode = false;
   straightMode = true;
   redoFileMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "4px solid #2AD3D7";
   document.getElementById("eraser").style.border = "0px";
   document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
 function oldFileSwitch(){
@@ -368,16 +503,61 @@ function oldFileSwitch(){
   straightMode = false;
   straightMode = false;
   redoFileMode = true;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
   document.getElementById("alterFile").style.border = "4px solid #2AD3D7";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
+}
+
+function moveDrawing(){
+  penMode = false;
+  eraseMode = false;
+  rectMode = false;
+  circMode = false;
+  straightMode = false;
+  straightMode = false;
+  redoFileMode = false;
+  moveDrawingMode = true;
+  copyDrawingMode = false;
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "4px solid #2AD3D7";
+  document.getElementById("copyDrawing").style.border = "0px";
+}
+
+function copyDrawing(){
+  penMode = false;
+  eraseMode = false;
+  rectMode = false;
+  circMode = false;
+  straightMode = false;
+  straightMode = false;
+  redoFileMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = true;
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("eraser").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "4px solid #2AD3D7";
 }
 
 function fineMode() {
   ctx.lineWidth = 1;
+  ctxBack.lineWidth = 1;
   document.getElementById("fine").style.border = "4px solid #2AD3D7";
   document.getElementById("normal").style.border = "0px";
   document.getElementById("thick").style.border = "0px";
@@ -385,6 +565,7 @@ function fineMode() {
 
 function normalMode() {
   ctx.lineWidth = 5;
+  ctxBack.lineWidth = 5;
   document.getElementById("fine").style.border = "0px";
   document.getElementById("normal").style.border = "4px solid #2AD3D7";
   document.getElementById("thick").style.border = "0px";
@@ -392,6 +573,7 @@ function normalMode() {
 
 function thickMode() {
   ctx.lineWidth = 10;
+  ctxBack.lineWidth = 10;
   document.getElementById("fine").style.border = "0px";
   document.getElementById("normal").style.border = "0px";
   document.getElementById("thick").style.border = "4px solid #2AD3D7";
@@ -400,54 +582,72 @@ function thickMode() {
 function blue(){
   ctx.strokeStyle = "#008bf5";
   ctx.fillStyle = "#008bf5";
+  ctxBack.strokeStyle = "#008bf5";
+  ctxBack.fillStyle = "#008bf5";
   document.getElementById("color").style.border = "4px solid #008bf5";
 }
 
 function green(){
   ctx.strokeStyle = "#0ac235";
   ctx.fillStyle = "#0ac235";
+  ctxBack.strokeStyle = "#0ac235";
+  ctxBack.fillStyle = "#0ac235";
   document.getElementById("color").style.border = "4px solid #0ac235";
 }
 
 function red(){
   ctx.strokeStyle = "#de0404";
   ctx.fillStyle = "#de0404";
+  ctxBack.strokeStyle = "#de0404";
+  ctxBack.fillStyle = "#de0404";
   document.getElementById("color").style.border = "4px solid #de0404";
 }
 
 function black(){
   ctx.strokeStyle = "#000000";
   ctx.fillStyle = "#000000";
+  ctxBack.strokeStyle = "#000000";
+  ctxBack.fillStyle = "#000000";
   document.getElementById("color").style.border = "4px solid #000000";
 }
 
 function yellow(){
   ctx.strokeStyle = "#e6de0b";
   ctx.fillStyle = "#e6de0b";
+  ctxBack.strokeStyle = "#e6de0b";
+  ctxBack.fillStyle = "#e6de0b";
   document.getElementById("color").style.border = "4px solid #e6de0b";
 }
 
 function pink(){
   ctx.strokeStyle = "#EE37DB";
   ctx.fillStyle = "#EE37DB";
+  ctxBack.strokeStyle = "#EE37DB";
+  ctxBack.fillStyle = "#EE37DB";
   document.getElementById("color").style.border = "4px solid #EE37DB";
 }
 
 function purple(){
   ctx.strokeStyle = "#9700FF";
   ctx.fillStyle = "#9700FF";
+  ctxBack.strokeStyle = "#9700FF";
+  ctxBack.fillStyle = "#9700FF";
   document.getElementById("color").style.border = "4px solid #9700FF";
 }
 
 function cyan(){
   ctx.strokeStyle = "#00FFDF";
   ctx.fillStyle = "#00FFDF";
+  ctxBack.strokeStyle = "#00FFDF";
+  ctxBack.fillStyle = "#00FFDF";
   document.getElementById("color").style.border = "4px solid #00FFDF";
 }
 
 function orange(){
   ctx.strokeStyle = "#FFA100";
   ctx.fillStyle = "#FFA100";
+  ctxBack.strokeStyle = "#FFA100";
+  ctxBack.fillStyle = "#FFA100";
   document.getElementById("color").style.border = "4px solid #FFA100";
 }
 
@@ -620,6 +820,8 @@ function erase(){
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
   document.getElementById("eraser").style.border = "4px solid #2AD3D7";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
 function erasing(event){
@@ -636,7 +838,12 @@ function erasing(event){
       lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
       lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
       document.getElementById("backButton").disabled = false;
-      ctx.clearRect(x1,y1,x2-x1,y2-y1);
+      if(topSheet == true){
+        ctx.clearRect(x1,y1,x2-x1,y2-y1);
+      }
+      else{
+        ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
+      }
       document.removeEventListener('mousemove', tempClearRect);
       ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
       part1 = 0;
@@ -693,13 +900,24 @@ function rectDraw(event){
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
-    ctx.beginPath();
-    //console.log(x1+" "+y1+" "+x2+" "+y2);
-    ctx.strokeRect(x1,y1,x2-x1,y2-y1);
-    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
-    part1 = 0;
-    part2 = 0;
-    ctx.closePath();
+    if(topSheet == true){
+      ctx.beginPath();
+      //console.log(x1+" "+y1+" "+x2+" "+y2);
+      ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+      part1 = 0;
+      part2 = 0;
+      ctx.closePath();
+    }
+    else{
+      ctxBack.beginPath();
+      //console.log(x1+" "+y1+" "+x2+" "+y2);
+      ctxBack.strokeRect(x1,y1,x2-x1,y2-y1);
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+      part1 = 0;
+      part2 = 0;
+      ctxBack.closePath();
+    }
   }
 }
 
@@ -750,13 +968,24 @@ function circDraw(event){
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
-    ctx.beginPath();
-    ctx.arc(x1,y1,rad,0, 2*Math.PI);
-    ctx.stroke();
-    ctx.closePath();
-    part1 = 0;
-    part2 = 0;
-    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    if(topSheet == true){
+      ctx.beginPath();
+      ctx.arc(x1,y1,rad,0, 2*Math.PI);
+      ctx.stroke();
+      ctx.closePath();
+      part1 = 0;
+      part2 = 0;
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    }
+    else {
+      ctxBack.beginPath();
+      ctxBack.arc(x1,y1,rad,0, 2*Math.PI);
+      ctxBack.stroke();
+      ctxBack.closePath();
+      part1 = 0;
+      part2 = 0;
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    }
   }
 
   else if(part1 == 1 && part2 == 0){
@@ -786,13 +1015,24 @@ function straightDraw(event) {
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
-    ctx.beginPath();
-    ctx.moveTo(x1,y1);
-    ctx.lineTo(x2,y2);
-    ctx.stroke();
-    part1 = 0;
-    part2 = 0;
-    ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    if(topSheet == true){
+      ctx.beginPath();
+      ctx.moveTo(x1,y1);
+      ctx.lineTo(x2,y2);
+      ctx.stroke();
+      part1 = 0;
+      part2 = 0;
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    }
+    else {
+      ctxBack.beginPath();
+      ctxBack.moveTo(x1,y1);
+      ctxBack.lineTo(x2,y2);
+      ctxBack.stroke();
+      part1 = 0;
+      part2 = 0;
+      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+    }
   }
   else if(part1 == 1 && part2 == 0){
     xTemp = event.offsetX;
@@ -843,11 +1083,21 @@ function draw(event){
   }
 
   if (drawOn == true){
-    ctx.beginPath();
-    ctx.moveTo(lastX,lastY);
-    ctx.lineTo(x,y);
-    ctx.stroke();
-    lastX = x;
-    lastY = y;
+    if(topSheet == true){
+      ctx.beginPath();
+      ctx.moveTo(lastX,lastY);
+      ctx.lineTo(x,y);
+      ctx.stroke();
+      lastX = x;
+      lastY = y;
+    }
+    else {
+      ctxBack.beginPath();
+      ctxBack.moveTo(lastX,lastY);
+      ctxBack.lineTo(x,y);
+      ctxBack.stroke();
+      lastX = x;
+      lastY = y;
+    }
   }
 }
