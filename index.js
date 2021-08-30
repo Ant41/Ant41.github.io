@@ -20,6 +20,11 @@ var video = document.getElementById('video');
 //     ctxBack.drawImage(background,0,0);
 // }
 
+ctx.font = "20px Arial";
+ctxBack.font = "20px Arial";
+ctxTemp.font = "20px Arial";
+
+
 var topSheet = true;
 var bottomSheet = false;
 
@@ -371,50 +376,59 @@ function saveImage(){
   ctxSave.putImageData(imgData, 0, 0);
   var image = canvasSave.toDataURL("image/png").replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
   window.location.href = image;
-  ctxSave.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
 }
 
 function test(event){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
   if (penMode == true){
     document.removeEventListener('keydown', firstPoint);
     document.removeEventListener('keyup', secondPoint);
     document.removeEventListener('keydown', centerPoint);
     document.removeEventListener('keyup', radiusLength);
+    document.removeEventListener('mousemove', displayTextBox);
     draw(event);
   }
   if(eraseMode == true){
     document.addEventListener('keydown', firstPoint);
     document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
     erasing(event);
   }
   if(rectMode == true){
     document.addEventListener('keydown', firstPoint);
     document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
     rectDraw(event);
   }
   if(circMode == true){
     document.addEventListener('keydown', centerPoint);
     document.addEventListener('keyup', radiusLength);
+    document.removeEventListener('mousemove', displayTextBox);
     circDraw(event);
   }
   if(straightMode == true){
     document.addEventListener('keydown', firstPoint);
     document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
     straightDraw(event);
   }
   if(redoFileMode == true){
     document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
+    document.addEventListener('keydown', getUserLetters);
+    document.addEventListener('mousemove', displayTextBox);
     redoFile(event);
   }
   if(moveDrawingMode == true){
     document.addEventListener('keydown', firstPoint);
     document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
     moveDrawingMain(event);
   }
   if(copyDrawingMode == true){
     document.addEventListener('keydown', firstPoint);
     document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
     copyDrawingMain(event);
   }
 }
@@ -814,6 +828,7 @@ function erase(){
   rectMode = false;
   circMode = false;
   straightMode = false;
+  redoFileMode = false;
   erasing(event);
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
@@ -822,6 +837,7 @@ function erase(){
   document.getElementById("eraser").style.border = "4px solid #2AD3D7";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
+  document.getElementById("alterFile").style.border = "0px";
 }
 
 function erasing(event){
@@ -853,28 +869,53 @@ function erasing(event){
 }
 
 var redoFileMode = false;
+var letter;
+var doneTyping = false;
+document.getElementById("textInput").style.display = "none";
+
+function getUserLetters(){
+  key = event.keyCode;
+  letter = String.fromCharCode(key);
+  if(key == 13){ //enter key
+    doneTyping = true;
+  }
+  sentence = document.getElementById("textInput").value
+  console.log(sentence);
+}
+
+function displayTextBox(){
+  xAnchor = x;
+  yAnchor = y;
+  sentence = "text";
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxTemp.fillText(sentence,xAnchor,yAnchor);
+}
+
+function displayText(){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  ctxTemp.fillText(sentence,xAnchor,yAnchor);
+}
 
 function redoFile(event){
-    x = event.offsetX;
-    y = event.offsetY;
+  x = event.offsetX;
+  y = event.offsetY;
 
-    if(part1 == 1 && part2 == 0){
-      xTemp = event.offsetX;
-      yTemp = event.offsetY;
-      document.addEventListener('mousemove', tempClearRect);
-    }
-
-    else if(part1 == 1 && part2 == 1){
-      lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
-      lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      document.getElementById("backButton").disabled = false;
-      ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
-      document.removeEventListener('mousemove', tempClearRect);
-      ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
-      part1 = 0;
-      part2 = 0;
-    }
-
+  if(part1 == 1){
+    document.addEventListener('keydown', getUserLetters);
+    document.getElementById("textInput").style.display = "inline";
+    document.removeEventListener('keydown', hotKey);
+    document.removeEventListener('mousemove', displayTextBox);
+    document.addEventListener('keydown', displayText);
+  }
+  if(doneTyping == true){
+    document.getElementById("textInput").style.display = "none";
+    ctx.fillText(sentence,xAnchor,yAnchor);
+    doneTyping = false;
+    part1 = 0;
+    document.removeEventListener('keydown', getUserLetters);
+    document.addEventListener('keydown', hotKey);
+    sentence = " ";
+  }
 }
 
 var rectMode = false;

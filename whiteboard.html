@@ -53,7 +53,7 @@
       <li><img title="Thick Line" id="thick" class="vertImage" src="photos/thick.png" onclick="thickMode()" style="cursor: pointer;"></li>
       <li><img title="Eraser" id="eraser" class="vertImage" src="photos/eraser.png" onclick="erase()" style="cursor: pointer;"></li>
       <li><label for="fileOld" style="cursor: pointer;"><img title="Upload previous work" class="vertImage" src="photos/uploadOldWork.png"></label></li>
-      <li><img title="Erase selected work on files" id="alterFile" class="vertImage" src="photos/alter.png" onclick="oldFileSwitch()" style="cursor: pointer;"></li>
+      <li><img title="Erase selected work on files" id="alterFile" class="vertImage" src="photos/text.png" onclick="oldFileSwitch()" style="cursor: pointer;"></li>
     </ul>
 
     <div class="canvasStyle">
@@ -79,12 +79,15 @@
         Your browser does not support the canvas element.
       </canvas>
 
+
     </div>
 
     <div class="photoButton" style="position: fixed">
       <button style="background-color: #F83A3A; border-radius: 10px; cursor: pointer;" id="cameraButton" onclick="takePhoto(event)"> Take photo</button>
       <button style="border-radius: 10px; cursor: pointer;" id="cameraButtonCancel" onclick="cancel(event)"> Cancel</button>
     <div>
+
+    <input type="text" id="textInput" style="align: center; z-index: 1" onchange="getUserLetters()">
 
     <div id="myModal" class="modal">
       <!-- Modal content -->
