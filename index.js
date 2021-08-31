@@ -415,7 +415,7 @@ function test(event){
   }
   if(redoFileMode == true){
     document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keydown', getUserLetters);
+    //document.addEventListener('keydown', getUserLetters);
     document.addEventListener('mousemove', displayTextBox);
     redoFile(event);
   }
@@ -913,8 +913,10 @@ function redoFile(event){
     doneTyping = false;
     part1 = 0;
     document.removeEventListener('keydown', getUserLetters);
+    document.removeEventListener('keydown', displayText);
     document.addEventListener('keydown', hotKey);
     sentence = " ";
+    document.getElementById("textInput").value = " ";
   }
 }
 
