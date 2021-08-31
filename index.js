@@ -24,6 +24,7 @@ ctx.font = "20px Arial";
 ctxBack.font = "20px Arial";
 ctxTemp.font = "20px Arial";
 
+fontSize = 20;
 
 var topSheet = true;
 var bottomSheet = false;
@@ -212,13 +213,17 @@ function pageExtend(){
 
   document.getElementById("backButton").disabled = false;
 
-  canvas.height = canvas.height + 650;
-  canvasBack.height = canvasBack.height + 650;
-  canvasTemp.height = canvasTemp.height + 650;
-  canvasSave.height = canvasSave.height + 650;
+  canvas.height = canvas.height + 500;
+  canvasBack.height = canvasBack.height + 500;
+  canvasTemp.height = canvasTemp.height + 500;
+  canvasSave.height = canvasSave.height + 500;
 
   ctx.putImageData(lastImageFront, 0, 0);
   ctxBack.putImageData(lastImageBack, 0, 0);
+
+  ctx.font = `${fontSize}px Arial`;
+  ctxBack.font = `${fontSize}px Arial`;
+  ctxTemp.font = `${fontSize}px Arial`;
 }
 
 function undo(){
@@ -709,7 +714,7 @@ function uploadOldWork(){
       background = new Image();
       background.src = e.target.result;
       background.onload = function(ev) {
-        if(background.height >= 650){
+        if(background.height >= 500){
           canvas.height = background.height;
           canvasBack.height = background.height;
           canvasTemp.height = background.height;
@@ -772,6 +777,9 @@ function clearBack() {
   canvasTemp.height = 500;
   canvasSave.width = 1200;
   canvasSave.height = 500;
+  ctx.font = "20px Arial";
+  ctxBack.font = "20px Arial";
+  ctxTemp.font = "20px Arial";
 }
 
 function clearInk(){
