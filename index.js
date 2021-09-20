@@ -70,6 +70,9 @@ function hotKey(){
   if(key == 69){
     erase();
   }
+  if(key == 84){
+    textBox();
+  }
   if(key == 85){
     undo();
   }
@@ -418,11 +421,14 @@ function test(event){
     document.removeEventListener('mousemove', displayTextBox);
     straightDraw(event);
   }
-  if(redoFileMode == true){
+  if(textMode == true){
     document.addEventListener('keydown', firstPoint);
     //document.addEventListener('keydown', getUserLetters);
     document.addEventListener('mousemove', displayTextBox);
-    redoFile(event);
+    ctx.font = `${fontSize}px Arial`;
+    ctxBack.font = `${fontSize}px Arial`;
+    ctxTemp.font = `${fontSize}px Arial`;
+    textBoxEntry(event);
   }
   if(moveDrawingMode == true){
     document.addEventListener('keydown', firstPoint);
@@ -444,7 +450,7 @@ function penSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "4px solid #2AD3D7";
@@ -463,7 +469,7 @@ function rectSwitch(){
   rectMode = true;
   circMode = false;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
@@ -482,7 +488,7 @@ function circSwitch(){
   rectMode = false;
   circMode = true;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
@@ -501,7 +507,7 @@ function straightSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = true;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
@@ -514,14 +520,14 @@ function straightSwitch(){
   document.getElementById("copyDrawing").style.border = "0px";
 }
 
-function oldFileSwitch(){
+function textBox(){
   penMode = false;
   eraseMode = false;
   rectMode = false;
   circMode = false;
   straightMode = false;
   straightMode = false;
-  redoFileMode = true;
+  textMode = true;
   moveDrawingMode = false;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
@@ -541,7 +547,7 @@ function moveDrawing(){
   circMode = false;
   straightMode = false;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = true;
   copyDrawingMode = false;
   document.getElementById("pen").style.border = "0px";
@@ -561,7 +567,7 @@ function copyDrawing(){
   circMode = false;
   straightMode = false;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = true;
   document.getElementById("pen").style.border = "0px";
@@ -836,7 +842,7 @@ function erase(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  redoFileMode = false;
+  textMode = false;
   erasing(event);
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
@@ -876,7 +882,7 @@ function erasing(event){
 
 }
 
-var redoFileMode = false;
+var textMode = false;
 var letter;
 var doneTyping = false;
 document.getElementById("textInput").style.display = "none";
@@ -904,7 +910,7 @@ function displayText(){
   ctxTemp.fillText(sentence,xAnchor,yAnchor);
 }
 
-function redoFile(event){
+function textBoxEntry(event){
   x = event.offsetX;
   y = event.offsetY;
 
