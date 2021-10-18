@@ -922,6 +922,8 @@ function textBoxEntry(event){
     document.addEventListener('keydown', displayText);
   }
   if(doneTyping == true){
+    lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+    lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("textInput").style.display = "none";
     ctx.fillText(sentence,xAnchor,yAnchor);
     doneTyping = false;
