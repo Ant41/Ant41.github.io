@@ -445,6 +445,8 @@ function test(event){
 }
 
 function penSwitch(){
+  part1 = 0;
+  part2 = 0;
   penMode = true;
   eraseMode = false;
   rectMode = false;
@@ -464,6 +466,8 @@ function penSwitch(){
 }
 
 function rectSwitch(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = true;
@@ -483,6 +487,8 @@ function rectSwitch(){
 }
 
 function circSwitch(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = false;
@@ -502,6 +508,8 @@ function circSwitch(){
 }
 
 function straightSwitch(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = false;
@@ -521,6 +529,8 @@ function straightSwitch(){
 }
 
 function textBox(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = false;
@@ -541,6 +551,8 @@ function textBox(){
 }
 
 function moveDrawing(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = false;
@@ -561,6 +573,8 @@ function moveDrawing(){
 }
 
 function copyDrawing(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = false;
   rectMode = false;
