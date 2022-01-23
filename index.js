@@ -52,28 +52,28 @@ window.onbeforeunload = function(event) {
 document.addEventListener('keydown', hotKey);
 
 function hotKey(){
-  key = event.keyCode;
-  //console.log(key);
+  key = event.key; //or try keyCode
+  console.log(key);
 
-  if(key == 87){ //w
+  if(key == 'w'){ //w
     penSwitch();
   }
-  if(key == 67){ //c
+  if(key == 'c'){ //c
     circSwitch();
   }
-  if(key == 83){ //s
+  if(key == 's'){ //s
     straightSwitch();
   }
-  if(key == 82){ //r
+  if(key == 'r'){ //r
     rectSwitch();
   }
-  if(key == 69){
+  if(key == 'e'){
     erase();
   }
-  if(key == 84){
+  if(key == 't'){
     textBox();
   }
-  if(key == 85){
+  if(key == 'u'){
     undo();
   }
 }
@@ -835,7 +835,7 @@ var part2 = 0;
 // }
 
 function firstPoint(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     x1 = x;
     y1 = y;
     part1 = 1;
@@ -843,7 +843,7 @@ function firstPoint(){
 }
 
 function secondPoint(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     x2 = x;
     y2 = y;
     part2 = 1;
@@ -902,13 +902,13 @@ var doneTyping = false;
 document.getElementById("textInput").style.display = "none";
 
 function getUserLetters(){
-  key = event.keyCode;
-  letter = String.fromCharCode(key);
-  if(key == 13){ //enter key
+  key = event.key; //or try keyCode
+  //letter = String.fromCharCode(key);
+  if(key == "Enter"){ //enter key 13
     doneTyping = true;
   }
   sentence = document.getElementById("textInput").value
-  console.log(sentence);
+  //console.log(sentence);
 }
 
 function displayTextBox(){
@@ -998,7 +998,7 @@ var rad = 0;
 var circMode = false;
 
 function centerPoint(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     x1 = x; //event.offsetX;
     y1 = y; //event.offsetY;
     //console.log("x1 "+x1+" y1 "+y1);
@@ -1007,7 +1007,7 @@ function centerPoint(){
 }
 
 function radiusLength(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     x2 = x; //event.offsetX;
     y2 = y; //event.offsetY;
     //console.log("x2 "+x2+" y2 "+y2);
@@ -1123,7 +1123,7 @@ var y;
 var penMode = true;
 
 function turnOn(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
@@ -1135,7 +1135,7 @@ function turnOn(){
 }
 
 function turnOff(){
-  if(event.key == "Alt"){
+  if(event.key == "Alt" || event.key == "Control"){
     drawOn = false;
     document.removeEventListener('keydown', turnOn);
     document.removeEventListener('keyup', turnOff);
