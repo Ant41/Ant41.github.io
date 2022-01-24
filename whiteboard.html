@@ -93,14 +93,34 @@
       <!-- Modal content -->
       <div class="modal-content">
         <span class="close">x</span>
-        <p>Hello! To use any of the drawing tools, all you do is press the alt key and hold it down to start drawing.
-          When you're happy with your result, just let go of the key and that's it! I might make a video about the DIY "stylus" I made to make drawing on a touchpad easier and put it on my website. Stay tuned.</p>
-        <p><b>Keyboard shortcuts</b></p>
-        <p>w = pen</p>
-        <p>s = straight line</p>
-        <p>r = rectangle</p>
-        <p>c = circle</p>
-        <p>e = eraser</p>
+        <p style="font-size: 30px; font-family: "Verdana", "Times New Roman"">Please refer to the following list for how to use the tools. Hover over buttons to see their descriptions.</p>
+        <p style="font-size: 30px;"><b>Tools</b></p>
+        <div><b>Pen</b>: Hold Alt/CTRL key down and move to draw.</div>
+        <div><b>Rectangle</b>: Hold Alt/CTRL key down and move mouse to change size. Release key to confirm.</div>
+        <div><b>Circle</b>: Hold Alt/CTRL key down and move mouse to change size. Release key to confirm.</div>
+        <div><b>Straight Line</b>: Hold Alt/CTRL key down and move mouse to change size. Release key to confirm.</div>
+        <div><b>Eraser</b>: Hold Alt/CTRL key down and move mouse to change size. Release key to confirm.</div>
+        <div><b>Text</b>: Press Alt/CTRL key where you want to place text. Enter text in input bar that appears under board. Hit the "Enter" key to finalize.</div>
+        <div><b>Camera</b>: Click the "Take photo" button under the board. Move your mouse onto the board and place the photo where you want it by
+          left-clicking with the trackpad, then move the mouse to resize to your prefered size. Left-click again to finalize.
+        </div>
+        <div><b>Upload Photo</b>: Select your image. Move your mouse onto the board and place the photo where you want it by
+          left-clicking with the trackpad, then move the mouse to resize to your prefered size. Left-click again to finalize.
+        </div>
+        <div><b>Copy Drawing</b>: Hold Alt/CTRL key down and move mouse to lasso desired area. Let go of mouse once area is selected.
+          Move mouse to where you want the drawing to go. Left-click the mouse to place the drawing.
+        </div>
+        <div><b>Move Drawing</b>: Hold Alt/CTRL key down and move mouse to lasso desired area. Let go of mouse once area is selected.
+          Move mouse to where you want the drawing to go. Left-click the mouse to place the drawing.
+        </div>
+        <p style="font-size: 30px;"><b>Keyboard shortcuts</b></p>
+        <div>w = pen</div>
+        <div>s = straight line</div>
+        <div>r = rectangle</div>
+        <div>c = circle</div>
+        <div>e = eraser</div>
+        <div>t = text</div>
+        <div>u = undo</div>
       </div>
     </div>
 
@@ -110,8 +130,8 @@
     .modal {
       display: none; /* Hidden by default */
       position: fixed; /* Stay in place */
-      z-index: 1; /* Sit on top */
       padding-top: 100px; /* Location of the box */
+      z-index: 0;
       left: 0;
       top: 0;
       width: 100%; /* Full width */
@@ -127,7 +147,14 @@
       padding: 20px;
       border: 1px solid #888;
       width: 80%;
+      height: 400px;
+      overflow: auto;
       text-align: left;
+    }
+
+    .modal-content div {
+      font-family: "Verdana", "Times New Roman";
+      font-size: 20px;
     }
 
     /* The Close Button */

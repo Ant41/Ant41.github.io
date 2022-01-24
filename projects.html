@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name = "description" content = "drawing">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title> Anton Goia </title>
+
+  </head>
+
+  <body>
+
+    <div class="optionsList">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <button class="dropbtn">Projects <i class="fa fa-caret-down"></i></button>
+        <div class="dropdown-content">
+          <a href="#Drawing Website">Drawing Website</a>
+          <a href="#3D Printer">3D Printer</a>
+          <a href="#MPAC">Memory Pattern Alarm Clock</a>
+          <a href="#Group Restaurant Selector">Group Restaurant Selector</a>
+          <a href="#Space Invaders Game">Space Invaders Game</a>
+          <a href="#Lightsaber">Prototype Lightsaber</a>
+          <a href="#Line Following Robot">Line Following Robot</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="baseDiv">
+
+      <!--Drawing Website-->
+      <h1 class="titleBlock" id="Drawing Website">Drawing Website</h1>
+        <div class="video">
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/whiteboard.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">The idea for this project came to me during online classes when I realized
+            just how difficult it is to effectively communicate concepts that require equations and drawings
+            over a video call. This is especially true for non-touchscreen devices, such as my Mac, because
+            drawing with a touchpad can be tedious and awkward. So I set off to fix this issue for myself, with the end
+            result shown on the left.
+          </p>
+          <p style="width: 100%;">The main premise of the writing mechanics is to still use the touchpad but
+            instead of pressing down on it to start drawing, you instead hold down the ALT or CTRL key. Doing this, alongside
+            creating a makeshift stylus (made from attaching aluminium foil to a pencil), allows for a much more fluid
+            writing experience.
+          </p>
+          <p style="width: 100%;">I wrote the HTML and Javascript code from scratch (with help from Stack Exchange).
+            As I grew more comfortable with HTML/Javascript, I continued to add features that I thought would be practical
+            to have. As such it has advanced to the point that I have used it in place of paper notes.
+          </p>
+          <p style="width: 100%;">Want to try it yourself? Click the button below! A warning that it is significantly easier
+            to use with the stylus, and that it may take time to get comfortable with it. Best results are on Chrome.
+          </p>
+          <div style="width: 100%; text-align: center;">
+            <a class= "whiteboardLink" style="text-decoration:none" href = "whiteboard.html">Try it out!</a>
+          </div>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--3D Printer-->
+      <h1 class="titleBlock" id="3D Printer">3D Printer</h1>
+        <div class="video" style="float: right;">
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/3D Printer.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">3D printers are amazing. They allow you to design almost
+            anything for a reasonable cost. The way it combines electronics, mechanical systems, and coding
+            into one project is what inspired me to create my own 3D printer.
+          </p>
+          <p style="width: 100%;">I based my project off of the Ultimaker 3D printer as I have worked with it in the past.
+            My printer uses PLA as the printing material as it doesn't require a heated build plate. Two motors control
+            the motion along the X and Y axis, the third motor drives motion in the Z direction, and the fourth motor
+            is used to extrude the material into the print head.
+          </p>
+          <p style="width: 100%;">The design of the frame is from scratch, as is the Arduino code that parses the
+            G-code file. The wiring was done by referring to online articles that explain how the motor driver works.
+          </p>
+          <p style="width: 100%;">This build is still in progress, stay tuned for updates on this!
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--Memory Pattern Alarm Clock-->
+      <h1 class="titleBlock" id="MPAC">Memory Pattern Alarm Clock</h1>
+        <div class="video">
+          <h4 style="width: 100%; text-align: center; margin-top: 50px;">Video coming soon!</h4>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">I have found that with enough practice, any alarm clock can be turned off
+            without fully waking an individual up. The act of just pressing "Done" or "Snooze" may not be stimulating enough to
+            get the person out of bed and ready to take on the day. That is where my idea for this alarm clock came from.
+          </p>
+          <p style="width: 100%;">It starts off with the classic high pitched buzzing sound for an alarm clock, but turning the
+            alarm off needs to be earned. To begin, you push the "Stop" button which ends the buzzing sound.
+            Then you must complete 3 rounds of patterns. Each round works as follows: The clock generates a random sequence of 5 flashes
+            that are displayed on 3 LED displays (for example the LED's flash in the order: Left, Left, Middle, Right, Middle). Once this
+            pattern is shown, the user must repeat the pattern by inputting it through 3 push buttons. Do this correctly and the alarm
+            turns off. But be warned that if you stop halfway through and go back to bed, the alarm will activate again in 1 minute.
+          </p>
+          <p style="width: 100%;">This device runs off an Arduino Uno, using a shift register, real time clock (RTC), and a piezo buzzer.
+            The code was written from scratch. It has features such as turning the display on/off, setting the time and alarm time, and turning
+            the alarm on/off.
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--Group Restaurant Selector-->
+      <h1 class="titleBlock" id="Group Restaurant Selector">Group Restaurant Selector</h1>
+        <div class="video" style="float: right;">
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/Group Restaurant Selector.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">How many times have you been with a group of friends wanting to go
+            grab some food but no one is decided where they want to go? What if there was an app for that? This is the inspiration
+            for the Group Restaurant Selector Web App, a group project in my third year projects course.
+          </p>
+          <p style="width: 100%;">Our idea was essentially Tinder for restaurants. It works as follows. One person will create a group on the app
+            where they select parameters such as location and maximum travel radius. After this is inputted, a random code is generated.
+            This code is then shared with everyone else who wants to participate. Every participant receives the same 5 randomly selected
+            restaurants and votes yes or no for them. Once everyone is done, the results are presented to everyone.
+            Not happy with any of the choices? You can get another 5 options by clicking "another round".
+          </p>
+          <p style="width: 100%;">For this project, I helped create the backend of the web app using NodeJS and Express. It was a great introduction into
+            backend development. I helped to create the structure of the web app using Express. I also worked on creating a data base in MySQL, updating it
+            with user info, and fetching data from it to present on the web app. In addition, I helped set up fetch calls to Google API's to obtain restaurant data.
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--Space Invaders Game-->
+      <h1 class="titleBlock" id="Space Invaders Game">Space Invaders Game</h1>
+        <div class="video">
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/Space Invaders.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">A classic arcade game that has stood the test of time.
+            I though it would be fun to try my hand in video game production and making a simple controller to play the game.
+            What you see is the end result.
+          </p>
+          <p style="width: 100%;">The game is run on an Arduino Uno, with the screen being a 8x8 LED display. The ship is
+            controlled using a joystick and you fire using a push button. The entire game was written from scratch. Some challenges
+            of programming this was having to keep track of all the different objects and how they interact with each other.
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--Lightsaber-->
+      <h1 class="titleBlock" id="Lightsaber">Prototype Lightsaber</h1>
+        <div class="video" style="float: right; text-align: center">
+          <video width="40%" controls loop>Error loading video
+            <source src="photos/Lightsaber.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">Reason for the project? Lightsabers are arguably the coolest movie item ever
+            and it would be fun to try and make my own.
+          </p>
+          <p style="width: 100%;">The lightsaber is made using an Arduino Uno, an accelerometer, a small speaker and amplifier circuit, some LED's,
+            and a microUSB reader. The frame of the lightsaber is made from cardboard (not to be used in wet battle conditions) and a string
+            of green LED's provide the lights. When activated and deactivated, the LED's turn on/off in sequential order, giving the effect of the blade expanding/shrinking. In addition,
+            the speaker produces the corresponding sound of ignition/shutoff and other sounds are played depending on the readings from the accelerometer.
+          </p>
+          <p style="width: 100%;">While the length of the blade makes it seem more like a "lightdagger", I think it's a very cool proof of concept and I plan on
+            making a version 2 sometime in the future!
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+      <!--Line Following Robot-->
+      <h1 class="titleBlock" id="Line Following Robot">Line Following Robot</h1>
+        <div class="video">
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/Line Following Robot.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="paragraph">
+          <p style="width: 100%; margin-top: 0px;">This build is what started my passion for Arduino projects. The Line Following
+            Robot was part of my second year projects courses and it really opened my eyes to the wonders of electronics.
+          </p>
+          <p style="width: 100%;">An Arduino Uno operates the robot (named Wall-E) and two brushed DC motors propel it on the track.
+            An array of 5 IR sensors detect where the black lines are and send the data back to the board to change direction. The code for
+            this project was written from scratch, and the wiring was done by referencing class notes.
+          </p>
+          <p style="width: 100%;"> The video on the left shows Wall-E taking on one of the tracks and making steady progress!
+          </p>
+        </div>
+        <div class="divider"><hr></div>
+
+    </div>
+
+    <style>
+
+      html, body {
+        margin: 0px;
+        height: 100%;
+        background-color: #F5F5ED;
+      }
+
+      .divider {
+        display: inline-block;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+
+      .vl {
+        border-left: solid green 1px;
+        height: 100%;
+        display: inline-block;
+      }
+
+      .video {
+        float: left;
+        height: auto;
+        width: 49%;
+        display: inline-block;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+
+      .paragraph p {
+        font-family: "Verdana", "Times New Roman";
+      }
+
+      .paragraph {
+        height: auto;
+        width: 45%;
+        display: inline-block;
+        padding-left: 30px;
+        padding-right: 10px;
+        font-size: 15px;
+        margin: 0px;
+      }
+
+      .titleBlock {
+        font-family: inherit;
+        font-size: 40px;
+        color: green;
+        padding-top: 60px;
+        margin-top: 0px;
+        padding-left: 30px;
+        padding-bottom: 30px;
+        text-align: left;
+      }
+
+      .optionsList {
+        position: fixed;
+        height: 50px;
+        top: 0px;
+        width: 100%;
+        overflow: visible;
+        background-color: green;
+        z-index: 1;
+      }
+
+      .optionsList a {
+        float: left;
+        color: white;
+        font-size: 25px;
+        text-align: left;
+        padding: 10px 16px;
+        text-decoration: none;
+      }
+
+      .dropdown {
+        overflow: hidden;
+        padding-left: 25px;
+        width: 150px;
+      }
+
+      .dropdown .dropbtn {
+        font-size: 25px;
+        border: none;
+        outline: none;
+        color: white;
+        padding: 10px 16px;
+        background-color: inherit;
+        font-family: inherit;
+        margin: 0;
+      }
+
+      .optionsList a:hover, .dropdown:hover .dropbtn {
+        background-color: #cccc00;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 50%;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+      }
+
+      .dropdown-content a {
+        float: none;
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ddd;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .projectRow {
+        width: 100%;
+        height: 70vh;
+      }
+
+      .baseDiv {
+        position: relative;
+        z-index: 0;
+        background: #F5F5ED;
+        height:100%;
+        width: 100%;
+        font-family: "Verdana", "Times New Roman";
+        margin-top: 50px;
+        padding-top: 0.001em;
+      }
+
+      .whiteboardLink {
+      border: solid black 1px;
+      border-radius: 4px;
+      color: black;
+      background-color: #cccc00;
+      display: inline-block;
+      font-size: 20px;
+      padding: 10px 30px;
+      cursor: pointer;
+      }
+
+      .whiteboardLink a {
+        color: black;
+        text-decoration: none;
+        text-align: center;
+      }
+
+    </style>
+
+  </body>
+
+</html>

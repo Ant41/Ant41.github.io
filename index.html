@@ -3,45 +3,152 @@
   <head>
     <meta charset="utf-8">
     <meta name = "description" content = "drawing">
-    <title> Drawing Website </title>
+    <title> Anton Goia </title>
 
   </head>
 
   <body>
+
+    <div class="baseDiv">
+
+      <div class="baseBackgroundImage">
+        <img src="photos/Background.jpg" alt="Cool image that didn't load" class="BackgroundImage">
+        <div class="BackgroundText">Welcome</div>
+      </div>
+
+      <div style="width: 100%; height: 90px; position: relative; background-color: #F5F5ED; z-index: 1;">
+        <div style="font-size: 50px; position: absolute; padding-top: 20px; padding-bottom: 20px; padding-left: 10px">About Me</div>
+      </div>
+
+      <div style="width: 100%; padding-left: 5px; border: solid #F5F5ED; height: 25vh; position: relative; background-color: #F5F5ED; z-index: 1; overflow: auto;">
+        <hr style="border: 1px solid green; width: 100%; margin-left: -10px;">
+        <div class="aboutMe" style="font-size: 20px">Hello! My name is Anton. A little bit about myself: I am in my 4th year of
+          Integrated Engineering at UBC, specializing in Electrical and Mechanical Engineering. I am also the Technical Officer
+          for UBC Thunderbikes, which builds electric racing motorcycles. In my free time I love playing volleyball, basketball,
+          and soccer.</div>
+        <p class="aboutMe" style="font-size: 20px">My project portfolio is accessible below. I hope you enjoy the exhibition!</p>
+      </div>
+
+      <ul class="navBar">
+        <div class="centered">
+          <li><a href="projects.html" style="text-decoration: none; padding: 14px 25px; background-color: green; color: white">Project Portfolio</a></li>
+          <li><a href="https://www.linkedin.com/in/anton-goia/" target="_blank"><img src="photos/LinkedInImage.png" alt="LinkedIn" class="LinkedInImage"></a></li>
+        </div>
+      </ul>
+
+    </div>
+
     <style>
-    .button {
-    border: solid black;
-    border-radius: 8px;
-    color: white;
-    padding: 5px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    }
 
-    .page {background-color: #ffffff;}
+      html, body {
+        margin: 0px;
+        height: 100%;
+        background-color: #F5F5ED;
+      }
 
-    a:link {
-      color: black;
-    }
+      .centered {
+        margin: 0px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        width: 100%;
+        z-index: 1;
+      }
 
-    a:visited {
-      color: black;
-    }
+      .LinkedInImage {
+        height: 50px;
+      }
+
+      .navBar {
+        list-style-type: none;
+        text-align: center;
+        margin: 0px;
+        height: 70px;
+        width: 100%;
+        position: relative;
+        padding-left: 0;
+        background-color: #F5F5ED;
+      }
+
+      .navBar li {
+        display: inline-block;
+        font-size: 20px;
+        font-family: "Verdana", "Times New Roman";
+        padding: 20px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .aboutMe {
+        font-family: "Verdana", "Times New Roman";
+      }
+
+      .BackgroundText {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-family: "Verdana", "Times New Roman";
+        font-size: 100px;
+        font-style: italic;
+        text-shadow: 2px 2px black;
+      }
+
+      .BackgroundImage {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0px 60%;
+      }
+
+      .baseBackgroundImage {
+        width: 100%;
+        height: 80vh;
+        position: sticky;
+        position: -webkit-sticky; /* Safari */
+        top: 0;
+        text-align: center;
+        z-index: 0;
+      }
+
+      .baseDiv {
+        background: #F5F5ED;
+        height:100%;
+        width: 100%;
+      }
+
+      .button {
+      border: solid black;
+      border-radius: 8px;
+      color: white;
+      padding: 5px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      }
+
+      .page {background-color: #ffffff;}
+
+      a:link {
+        color: black;
+      }
+
+      a:visited {
+        color: black;
+      }
 
 
-    a:hover {
-      color: blue;
-    }
+      a:hover {
+        color: green;
+      }
 
     </style>
-
-    <h1><p style = "color: blue"> Start drawing </p></h1>
-    <hr>
-    <button class= "button page"> <a style="text-decoration:none" href = "whiteboard.html">New board</a> </button>
 
   </body>
 
