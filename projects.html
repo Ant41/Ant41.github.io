@@ -88,7 +88,9 @@
       <!--Memory Pattern Alarm Clock-->
       <h1 class="titleBlock" id="MPAC">Memory Pattern Alarm Clock</h1>
         <div class="video">
-          <h4 style="width: 100%; text-align: center; margin-top: 50px;">Video coming soon!</h4>
+          <video width="100%" height="100%" controls loop>Error loading video
+            <source src="photos/MPAC.mp4" type="video/mp4">
+          </video>
         </div>
         <div class="paragraph">
           <p style="width: 100%; margin-top: 0px;">I have found that with enough practice, any alarm clock can be turned off
@@ -97,14 +99,14 @@
           </p>
           <p style="width: 100%;">It starts off with the classic high pitched buzzing sound for an alarm clock, but turning the
             alarm off needs to be earned. To begin, you push the "Stop" button which ends the buzzing sound.
-            Then you must complete 3 rounds of patterns. Each round works as follows: The clock generates a random sequence of 5 flashes
-            that are displayed on 3 LED displays (for example the LED's flash in the order: Left, Left, Middle, Right, Middle). Once this
+            Then you must complete 4 rounds of patterns. Each round works as follows: The clock generates a random sequence of 6 flashes
+            that are displayed on 3 LED displays (for example the LED's flash in the order: Left, Left, Middle, Left, Right, Middle). Once this
             pattern is shown, the user must repeat the pattern by inputting it through 3 push buttons. Do this correctly and the alarm
             turns off. But be warned that if you stop halfway through and go back to bed, the alarm will activate again in 1 minute.
           </p>
           <p style="width: 100%;">This device runs off an Arduino Uno, using a shift register, real time clock (RTC), and a piezo buzzer.
             The code was written from scratch. It has features such as turning the display on/off, setting the time and alarm time, and turning
-            the alarm on/off.
+            the alarm on/off. Currently the wire management leaves much to be desired.
           </p>
         </div>
         <div class="divider"><hr></div>
