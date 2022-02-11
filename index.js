@@ -53,7 +53,7 @@ document.addEventListener('keydown', hotKey);
 
 function hotKey(){
   key = event.key; //or try keyCode
-  console.log(key);
+  //console.log(key);
 
   if(key == 'w'){ //w
     penSwitch();
@@ -618,12 +618,84 @@ function thickMode() {
   document.getElementById("thick").style.border = "4px solid #2AD3D7";
 }
 
+var colourCount = 1;
+function changeColour(){
+  colourSelect = event.key;
+  if (colourSelect == "ArrowDown") {
+    colourCount = colourCount + 1;
+    if (colourCount == 10){
+      colourCount = 1;
+    }
+    if (colourCount == 1){
+      black();
+    }
+    else if (colourCount == 2) {
+      red();
+    }
+    else if (colourCount == 3) {
+      yellow();
+    }
+    else if (colourCount == 4) {
+      pink();
+    }
+    else if (colourCount == 5) {
+      purple();
+    }
+    else if (colourCount == 6) {
+      cyan();
+    }
+    else if (colourCount == 7) {
+      orange();
+    }
+    else if (colourCount == 8) {
+      blue();
+    }
+    else {
+      green();
+    }
+  }
+  if (colourSelect == "ArrowUp") {
+    colourCount = colourCount - 1;
+    if (colourCount == 0){
+      colourCount = 9;
+    }
+    if (colourCount == 1){
+      black();
+    }
+    else if (colourCount == 2) {
+      red();
+    }
+    else if (colourCount == 3) {
+      yellow();
+    }
+    else if (colourCount == 4) {
+      pink();
+    }
+    else if (colourCount == 5) {
+      purple();
+    }
+    else if (colourCount == 6) {
+      cyan();
+    }
+    else if (colourCount == 7) {
+      orange();
+    }
+    else if (colourCount == 8) {
+      blue();
+    }
+    else {
+      green();
+    }
+  }
+}
+
 function blue(){
   ctx.strokeStyle = "#008bf5";
   ctx.fillStyle = "#008bf5";
   ctxBack.strokeStyle = "#008bf5";
   ctxBack.fillStyle = "#008bf5";
   document.getElementById("color").style.border = "4px solid #008bf5";
+  colourCount = 8;
 }
 
 function green(){
@@ -632,6 +704,7 @@ function green(){
   ctxBack.strokeStyle = "#0ac235";
   ctxBack.fillStyle = "#0ac235";
   document.getElementById("color").style.border = "4px solid #0ac235";
+  colourCount = 9;
 }
 
 function red(){
@@ -640,6 +713,7 @@ function red(){
   ctxBack.strokeStyle = "#de0404";
   ctxBack.fillStyle = "#de0404";
   document.getElementById("color").style.border = "4px solid #de0404";
+  colourCount = 2;
 }
 
 function black(){
@@ -648,6 +722,7 @@ function black(){
   ctxBack.strokeStyle = "#000000";
   ctxBack.fillStyle = "#000000";
   document.getElementById("color").style.border = "4px solid #000000";
+  colourCount = 1;
 }
 
 function yellow(){
@@ -656,6 +731,7 @@ function yellow(){
   ctxBack.strokeStyle = "#e6de0b";
   ctxBack.fillStyle = "#e6de0b";
   document.getElementById("color").style.border = "4px solid #e6de0b";
+  colourCount = 3;
 }
 
 function pink(){
@@ -664,6 +740,7 @@ function pink(){
   ctxBack.strokeStyle = "#EE37DB";
   ctxBack.fillStyle = "#EE37DB";
   document.getElementById("color").style.border = "4px solid #EE37DB";
+  colourCount = 4;
 }
 
 function purple(){
@@ -672,6 +749,7 @@ function purple(){
   ctxBack.strokeStyle = "#9700FF";
   ctxBack.fillStyle = "#9700FF";
   document.getElementById("color").style.border = "4px solid #9700FF";
+  colourCount = 5;
 }
 
 function cyan(){
@@ -680,6 +758,7 @@ function cyan(){
   ctxBack.strokeStyle = "#00FFDF";
   ctxBack.fillStyle = "#00FFDF";
   document.getElementById("color").style.border = "4px solid #00FFDF";
+  colourCount = 6;
 }
 
 function orange(){
@@ -688,6 +767,7 @@ function orange(){
   ctxBack.strokeStyle = "#FFA100";
   ctxBack.fillStyle = "#FFA100";
   document.getElementById("color").style.border = "4px solid #FFA100";
+  colourCount = 7;
 }
 
 var background;
