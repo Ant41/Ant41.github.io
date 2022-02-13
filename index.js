@@ -621,7 +621,7 @@ function thickMode() {
 var colourCount = 1;
 function changeColour(){
   colourSelect = event.key;
-  if (colourSelect == "ArrowDown") {
+  if (colourSelect == "l") {
     colourCount = colourCount + 1;
     if (colourCount == 10){
       colourCount = 1;
@@ -654,7 +654,7 @@ function changeColour(){
       green();
     }
   }
-  if (colourSelect == "ArrowUp") {
+  if (colourSelect == "p") {
     colourCount = colourCount - 1;
     if (colourCount == 0){
       colourCount = 9;
