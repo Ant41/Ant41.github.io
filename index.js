@@ -619,72 +619,75 @@ function thickMode() {
 }
 
 var colourCount = 1;
+var colorFreeze = false;
 function changeColour(){
   colourSelect = event.key;
-  if (colourSelect == "l") {
-    colourCount = colourCount + 1;
-    if (colourCount == 10){
-      colourCount = 1;
+  if (colorFreeze != true) {
+    if (colourSelect == "l") {
+      colourCount = colourCount + 1;
+      if (colourCount == 10){
+        colourCount = 1;
+      }
+      if (colourCount == 1){
+        black();
+      }
+      else if (colourCount == 2) {
+        red();
+      }
+      else if (colourCount == 3) {
+        yellow();
+      }
+      else if (colourCount == 4) {
+        pink();
+      }
+      else if (colourCount == 5) {
+        purple();
+      }
+      else if (colourCount == 6) {
+        cyan();
+      }
+      else if (colourCount == 7) {
+        orange();
+      }
+      else if (colourCount == 8) {
+        blue();
+      }
+      else {
+        green();
+      }
     }
-    if (colourCount == 1){
-      black();
-    }
-    else if (colourCount == 2) {
-      red();
-    }
-    else if (colourCount == 3) {
-      yellow();
-    }
-    else if (colourCount == 4) {
-      pink();
-    }
-    else if (colourCount == 5) {
-      purple();
-    }
-    else if (colourCount == 6) {
-      cyan();
-    }
-    else if (colourCount == 7) {
-      orange();
-    }
-    else if (colourCount == 8) {
-      blue();
-    }
-    else {
-      green();
-    }
-  }
-  if (colourSelect == "p") {
-    colourCount = colourCount - 1;
-    if (colourCount == 0){
-      colourCount = 9;
-    }
-    if (colourCount == 1){
-      black();
-    }
-    else if (colourCount == 2) {
-      red();
-    }
-    else if (colourCount == 3) {
-      yellow();
-    }
-    else if (colourCount == 4) {
-      pink();
-    }
-    else if (colourCount == 5) {
-      purple();
-    }
-    else if (colourCount == 6) {
-      cyan();
-    }
-    else if (colourCount == 7) {
-      orange();
-    }
-    else if (colourCount == 8) {
-      blue();
-    }
-    else {
-      green();
+    if (colourSelect == "p") {
+      colourCount = colourCount - 1;
+      if (colourCount == 0){
+        colourCount = 9;
+      }
+      if (colourCount == 1){
+        black();
+      }
+      else if (colourCount == 2) {
+        red();
+      }
+      else if (colourCount == 3) {
+        yellow();
+      }
+      else if (colourCount == 4) {
+        pink();
+      }
+      else if (colourCount == 5) {
+        purple();
+      }
+      else if (colourCount == 6) {
+        cyan();
+      }
+      else if (colourCount == 7) {
+        orange();
+      }
+      else if (colourCount == 8) {
+        blue();
+      }
+      else {
+        green();
+      }
     }
   }
 }
@@ -1009,6 +1012,7 @@ function textBoxEntry(event){
   y = event.offsetY;
 
   if(part1 == 1){
+    colorFreeze = true;
     document.addEventListener('keydown', getUserLetters);
     document.getElementById("textInput").style.display = "inline";
     document.removeEventListener('keydown', hotKey);
@@ -1016,6 +1020,7 @@ function textBoxEntry(event){
     document.addEventListener('keydown', displayText);
   }
   if(doneTyping == true){
+    colorFreeze = false;
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("textInput").style.display = "none";
