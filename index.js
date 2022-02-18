@@ -19,9 +19,9 @@ var w = canvas.width;
 var h = canvas.height;
 resizeCanvas();
 function resizeCanvas(){
-  canvas.width = w * scaleBy;
+  canvas.width = w * scaleBy; //2400px, this is the resolution of the drawing
   canvas.height = h * scaleBy;
-  canvas.style.width = w + 'px';
+  canvas.style.width = w + 'px'; //1200 px, this is shown on screen
   canvas.style.height = h + 'px';
   canvasBack.width = w * scaleBy;
   canvasBack.height = h * scaleBy;
@@ -35,7 +35,7 @@ function resizeCanvas(){
   canvasSave.height = h * scaleBy;
   canvasSave.style.width = w + 'px';
   canvasSave.style.height = h + 'px';
-  ctx.scale(scaleBy, scaleBy);
+  ctx.scale(scaleBy, scaleBy); //now one CSS unit is equal to 2 actual pixels, ensures that drawings look correct
   ctxBack.scale(scaleBy, scaleBy);
   ctxTemp.scale(scaleBy, scaleBy);
   ctxSave.scale(scaleBy, scaleBy);
@@ -810,7 +810,7 @@ function uploading(event){
       background.onload = function(ev) {
         ratio = background.height/background.width;
         if (background.width >= 1200){
-          background.width = 200;
+          background.width = 1200;
           // background.width = 1200;
           // canvas.width = background.width;
           // canvasBack.width = background.width;
@@ -847,8 +847,31 @@ function uploadOldWork(){
           canvasTemp.height = background.height;
           canvasSave.height = background.height;
         }
-        ctxBack.drawImage(background,0,0);
-        console.log("here");
+
+        w = background.width/scaleBy;
+        h = background.height/scaleBy;
+        canvas.style.width = w + 'px';
+        canvasBack.style.width = w + 'px';
+        canvasTemp.style.width = w + 'px';
+        canvasSave.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvasBack.style.height = h + 'px';
+        canvasTemp.style.height = h + 'px';
+        canvasSave.style.height = h + 'px';
+        canvas.width = 1200*scaleBy;
+        canvasBack.width = 1200*scaleBy;
+        canvasTemp.width = 1200*scaleBy;
+        canvasSave.width = 1200*scaleBy;
+        canvas.height = h*scaleBy;
+        canvasBack.height = h*scaleBy;
+        canvasTemp.height = h*scaleBy;
+        canvasSave.height = h*scaleBy;
+
+        ctxBack.drawImage(background,0,0,canvas.width,canvas.height);
+        ctx.scale(scaleBy, scaleBy);
+        ctxBack.scale(scaleBy, scaleBy);
+        ctxTemp.scale(scaleBy, scaleBy);
+        ctxSave.scale(scaleBy, scaleBy);
       }
   }
   reader.readAsDataURL(file);
