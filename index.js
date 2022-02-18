@@ -14,11 +14,32 @@ var background;
 
 var video = document.getElementById('video');
 
-//background.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
-
-// background.onload = function(){
-//     ctxBack.drawImage(background,0,0);
-// }
+var scaleBy = window.devicePixelRatio;
+var w = canvas.width;
+var h = canvas.height;
+resizeCanvas();
+function resizeCanvas(){
+  canvas.width = w * scaleBy;
+  canvas.height = h * scaleBy;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  canvasBack.width = w * scaleBy;
+  canvasBack.height = h * scaleBy;
+  canvasBack.style.width = w + 'px';
+  canvasBack.style.height = h + 'px';
+  canvasTemp.width = w * scaleBy;
+  canvasTemp.height = h * scaleBy;
+  canvasTemp.style.width = w + 'px';
+  canvasTemp.style.height = h + 'px';
+  canvasSave.width = w * scaleBy;
+  canvasSave.height = h * scaleBy;
+  canvasSave.style.width = w + 'px';
+  canvasSave.style.height = h + 'px';
+  ctx.scale(scaleBy, scaleBy);
+  ctxBack.scale(scaleBy, scaleBy);
+  ctxTemp.scale(scaleBy, scaleBy);
+  ctxSave.scale(scaleBy, scaleBy);
+}
 
 ctx.font = "20px Arial";
 ctxBack.font = "20px Arial";
@@ -136,18 +157,18 @@ function moveDrawingMain(event){
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
     if(topSheet == true){
-      imageToCopy = ctx.getImageData(x1, y1, x2-x1, y2-y1);
+      imageToCopy = ctx.getImageData(x1*scaleBy, y1*scaleBy, (x2-x1)*scaleBy, (y2-y1)*scaleBy);
       part1 = 0;
       part2 = 0;
-      ctx.clearRect(x1,y1,x2-x1,y2-y1);
+      ctx.clearRect(x1,y1,(x2-x1),(y2-y1));
       document.addEventListener('mousemove', previewImage);
       document.addEventListener('mousedown', placeImage);
     }
     else {
-      imageToCopy = ctxBack.getImageData(x1, y1, x2-x1, y2-y1);
+      imageToCopy = ctxBack.getImageData(x1*scaleBy, y1*scaleBy, (x2-x1)*scaleBy, (y2-y1)*scaleBy);
       part1 = 0;
       part2 = 0;
-      ctxBack.clearRect(x1,y1,x2-x1,y2-y1);
+      ctxBack.clearRect(x1,y1,(x2-x1),(y2-y1));
       document.addEventListener('mousemove', previewImage);
       document.addEventListener('mousedown', placeImage);
     }
@@ -173,14 +194,14 @@ function copyDrawingMain(event){
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
     if(topSheet == true){
-      imageToCopy = ctx.getImageData(x1, y1, x2-x1, y2-y1);
+      imageToCopy = ctx.getImageData(x1*scaleBy, y1*scaleBy, (x2-x1)*scaleBy, (y2-y1)*scaleBy);
       part1 = 0;
       part2 = 0;
       document.addEventListener('mousemove', previewImage);
       document.addEventListener('mousedown', placeImage);
     }
     else {
-      imageToCopy = ctxBack.getImageData(x1, y1, x2-x1, y2-y1);
+      imageToCopy = ctxBack.getImageData(x1*scaleBy, y1*scaleBy, (x2-x1)*scaleBy, (y2-y1)*scaleBy);
       part1 = 0;
       part2 = 0;
       document.addEventListener('mousemove', previewImage);
@@ -193,15 +214,15 @@ function previewImage(){
   ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
   x = event.offsetX;
   y = event.offsetY;
-  ctxTemp.putImageData(imageToCopy,x,y);
+  ctxTemp.putImageData(imageToCopy,x*scaleBy,y*scaleBy);
 }
 
 function placeImage(){
   if(topSheet == true){
-    ctx.putImageData(imageToCopy,x,y);
+    ctx.putImageData(imageToCopy,x*scaleBy,y*scaleBy);
   }
   else {
-    ctxBack.putImageData(imageToCopy,x,y);
+    ctxBack.putImageData(imageToCopy,x*scaleBy,y*scaleBy);
   }
   document.removeEventListener('mousemove', previewImage);
   document.removeEventListener('mousedown', placeImage);
@@ -216,10 +237,12 @@ function pageExtend(){
 
   document.getElementById("backButton").disabled = false;
 
-  canvas.height = canvas.height + 500;
-  canvasBack.height = canvasBack.height + 500;
-  canvasTemp.height = canvasTemp.height + 500;
-  canvasSave.height = canvasSave.height + 500;
+  canvas.height = (canvas.height + 500)/scaleBy;
+  canvasBack.height = (canvasBack.height + 500)/scaleBy;
+  canvasTemp.height = (canvasTemp.height + 500)/scaleBy;
+  canvasSave.height = (canvasSave.height + 500)/scaleBy;
+  h = canvas.height
+  resizeCanvas();
 
   ctx.putImageData(lastImageFront, 0, 0);
   ctxBack.putImageData(lastImageBack, 0, 0);
@@ -382,12 +405,13 @@ function saveImage(){
   }
 
   ctxSave.putImageData(imgData, 0, 0);
-  var image = canvasSave.toDataURL("image/png").replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
+  var image = canvasSave.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
   window.location.href = image;
   ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
 }
 
 function test(event){
+
   ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
   if (penMode == true){
     document.removeEventListener('keydown', firstPoint);
@@ -880,6 +904,8 @@ function clearBack() {
   canvasTemp.height = 500;
   canvasSave.width = 1200;
   canvasSave.height = 500;
+  h = canvas.height;
+  resizeCanvas();
   ctx.font = "20px Arial";
   ctxBack.font = "20px Arial";
   ctxTemp.font = "20px Arial";
