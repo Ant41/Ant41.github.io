@@ -405,9 +405,21 @@ function saveImage(){
   }
 
   ctxSave.putImageData(imgData, 0, 0);
-  var image = canvasSave.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
-  window.location.href = image;
+  // var image = canvasSave.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
+  // window.location.href = image;
+  // ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
+
+  var url;
+  canvasSave.toBlob(function(blob){
+    url = URL.createObjectURL(blob);
+    window.open(
+      url,
+      '_blank' // <- This is what makes it open in a new window.
+    );
+  });
   ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
+  URL.revokeObjectURL(url);
+
 }
 
 function test(event){
