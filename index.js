@@ -45,7 +45,7 @@ ctx.font = "20px Arial";
 ctxBack.font = "20px Arial";
 ctxTemp.font = "20px Arial";
 
-fontSize = 20;
+var fontSize = 20;
 
 var topSheet = true;
 var bottomSheet = false;
@@ -409,6 +409,7 @@ function saveImage(){
   // window.location.href = image;
   // ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
 
+  //save full version
   var url;
   canvasSave.toBlob(function(blob){
     url = URL.createObjectURL(blob);
@@ -420,6 +421,26 @@ function saveImage(){
   ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
   URL.revokeObjectURL(url);
 
+  //save front page
+  canvas.toBlob(function(blob){
+    url = URL.createObjectURL(blob);
+    window.open(
+      url,
+      '_blank' // <- This is what makes it open in a new window.
+    );
+  });
+  URL.revokeObjectURL(url);
+
+  //save back page
+  var url;
+  canvasBack.toBlob(function(blob){
+    url = URL.createObjectURL(blob);
+    window.open(
+      url,
+      '_blank' // <- This is what makes it open in a new window.
+    );
+  });
+  URL.revokeObjectURL(url);
 }
 
 function test(event){
@@ -879,11 +900,23 @@ function uploadOldWork(){
         canvasTemp.height = h*scaleBy;
         canvasSave.height = h*scaleBy;
 
-        ctxBack.drawImage(background,0,0,canvas.width,canvas.height);
-        ctx.scale(scaleBy, scaleBy);
-        ctxBack.scale(scaleBy, scaleBy);
-        ctxTemp.scale(scaleBy, scaleBy);
-        ctxSave.scale(scaleBy, scaleBy);
+        if(topSheet == true){ //if uploading top layer of work
+          ctx.drawImage(background,0,0,canvas.width,canvas.height);
+          ctx.scale(scaleBy, scaleBy);
+          ctxBack.scale(scaleBy, scaleBy);
+          ctxTemp.scale(scaleBy, scaleBy);
+          ctxSave.scale(scaleBy, scaleBy);
+          ctxBack.putImageData(lastImageBack, 0, 0);
+        }
+        else { //if uploading back layer of work
+          ctxBack.drawImage(background,0,0,canvas.width,canvas.height);
+          ctx.scale(scaleBy, scaleBy);
+          ctxBack.scale(scaleBy, scaleBy);
+          ctxTemp.scale(scaleBy, scaleBy);
+          ctxSave.scale(scaleBy, scaleBy);
+          ctx.putImageData(lastImageFront, 0, 0);
+        }
+
       }
   }
   reader.readAsDataURL(file);
@@ -1044,6 +1077,7 @@ var textMode = false;
 var letter;
 var doneTyping = false;
 document.getElementById("textInput").style.display = "none";
+document.getElementById("textSize").style.display = "none";
 
 function getUserLetters(){
   key = event.key; //or try keyCode
@@ -1076,6 +1110,7 @@ function textBoxEntry(event){
     colorFreeze = true;
     document.addEventListener('keydown', getUserLetters);
     document.getElementById("textInput").style.display = "inline";
+    document.getElementById("textSize").style.display = "inline";
     document.removeEventListener('keydown', hotKey);
     document.removeEventListener('mousemove', displayTextBox);
     document.addEventListener('keydown', displayText);
@@ -1085,6 +1120,7 @@ function textBoxEntry(event){
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("textInput").style.display = "none";
+    document.getElementById("textSize").style.display = "none";
     ctx.fillText(sentence,xAnchor,yAnchor);
     doneTyping = false;
     part1 = 0;
@@ -1094,6 +1130,13 @@ function textBoxEntry(event){
     sentence = " ";
     document.getElementById("textInput").value = " ";
   }
+}
+
+function getTextSize() {
+  fontSize = document.getElementById("textSize").value;
+  ctx.font = `${fontSize}px Arial`;
+  ctxBack.font = `${fontSize}px Arial`;
+  ctxTemp.font = `${fontSize}px Arial`;
 }
 
 var rectMode = false;

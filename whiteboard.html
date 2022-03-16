@@ -57,7 +57,7 @@
     </ul>
 
     <div class="canvasStyle">
-      <video id="video" width="1200" height="500" style="position:fixed; z-index: 0" autoplay></video>
+      <video id="video" width="1200" height="500" style="position:fixed; z-index: 0;" autoplay></video>
 
       <canvas id="CanvasSave" width="1200" height="500"
         style="border:1px solid #000000; position: absolute; z-index: -3; top: 0px; left: 0px">
@@ -87,7 +87,8 @@
       <button style="border-radius: 10px; cursor: pointer;" id="cameraButtonCancel" onclick="cancel(event)"> Cancel</button>
     <div>
 
-    <input type="text" id="textInput" style="align: center; z-index: 1" onchange="getUserLetters()">
+    <input type="number" id="textSize" style="align: center; z-index: 1; width: 40px" value: "20" placeholder="20" onchange="getTextSize()">
+    <input type="text" id="textInput" style="align: center; z-index: 1; width: 400px" onchange="getUserLetters()">
 
     <div id="myModal" class="modal">
       <!-- Modal content -->
