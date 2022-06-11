@@ -15,6 +15,7 @@
           <div class="dropdown">
             <img id="color" title="Color Selector" class="horizontalImage" src="photos/color.png" style="border: 4px solid #000000; cursor: pointer;">
             <div class="dropdown-content">
+              <button class="button select_color" onclick="open_colorSelector()">Custom</button>
               <button class="button blue_color" onclick="blue()"></button>
               <button class="button green_color" onclick="green()"></button>
               <button class="button black_color" onclick="black()"></button>
@@ -27,10 +28,13 @@
             </div>
           </div>
         </li>
-        <li style="display: inline; cursor: pointer;"><input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;"></li>
+        <li><input type="file"  accept="image/*" name="image" id="file"  onchange="uploading(event)" style="display: none;"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Line thickness" id="line" class="horizontalImage" src="photos/lineThickness.png" onclick="selectThickness()"></li>
         <li style="display: inline; cursor: pointer;"><img title="Clear Background" class="horizontalImage" src="photos/clearBackground.png" onclick="clearBack()"></li>
         <li style="display: inline; cursor: pointer;"><img title="Clear Ink" class="horizontalImage" src="photos/clearInk.png" onclick="clearInk()"></li>
         <li style="display: inline; cursor: pointer;"><img title="Take Photo" class="horizontalImage" src="photos/takePhoto.png" onclick="startPhoto(event)"></li>
+        <li><input type="file"  accept="image/*" name="image" id="fileOld"  onchange="uploadOldWork()" style="display: none;"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Upload previous work" class="horizontalImage" src="photos/uploadOldWork.png" onclick="open_oldFileUpload()" style="cursor: pointer;"></li>
         <li style="display: inline; cursor: pointer;"><label for="file" style="cursor: pointer;"><img title="Upload Photo" class="horizontalImage" src="photos/upload.png"></label></li>
         <li style="display: inline; cursor: pointer;"><img title="Save Photo" class="horizontalImage" src="photos/saveImage.png" onclick="saveImage()"></li>
         <li style="display: inline; cursor: pointer;"><button title="Undo Last Move" class="button" id="backButton" onclick="undo()">Undo</button></li>
@@ -39,28 +43,25 @@
         <li style="display: inline; cursor: pointer;"><img title="Edit bottom layer" class="horizontalImage" id="bottom" src="photos/bottom.png" onclick="bottomDraw()"></li>
         <li style="display: inline; cursor: pointer;"><img title="Copy Drawing" class="horizontalImage" id="copyDrawing" src="photos/copy.png" onclick="copyDrawing()"></li>
         <li style="display: inline; cursor: pointer;"><img title="Move Drawing" class="horizontalImage" id="moveDrawing" src="photos/move.png" onclick="moveDrawing()"></li>
+        <li style="display: inline; cursor: pointer;"><img title="Grid Mode" class="horizontalImage" id="grid" src="photos/grid.png" onclick="gridToggle()"></li>
       </div>
     </ul>
 
     <ul class="vertical">
-      <li><input type="file"  accept="image/*" name="image" id="fileOld"  onchange="uploadOldWork()" style="display: none;"></li>
       <li><img title="Pen" id="pen" class="vertImage" src="photos/pen.png" onclick="penSwitch()" style="border: 4px solid #2AD3D7; cursor: pointer;"></li>
       <li><img title="Rectangle Tool" id="rectangle" class="vertImage" src="photos/rectangle.png" onclick="rectSwitch()" style="cursor: pointer;"></li>
       <li><img title="Circle Tool" id="circle" class="vertImage" src="photos/circle.png" onclick="circSwitch()" style="cursor: pointer;"></li>
       <li><img title="Straight Line" id="straightLine" class="vertImage" src="photos/line.png" onclick="straightSwitch()" style="cursor: pointer;"></li>
-      <li><img title="Fine Line" id="fine" class="vertImage" src="photos/fine.png" onclick="fineMode()" style="border: 4px solid #2AD3D7; cursor: pointer;"></li>
-      <li><img title="Normal Line" id="normal" class="vertImage" src="photos/normal.png" onclick="normalMode()" style="cursor: pointer;"></li>
-      <li><img title="Thick Line" id="thick" class="vertImage" src="photos/thick.png" onclick="thickMode()" style="cursor: pointer;"></li>
+      <li><img title="Highlighter" id="highlighter" class="vertImage" src="photos/highlighter.png" onclick="highlightSwitch()" style="cursor: pointer;"></li>
       <li><img title="Eraser" id="eraser" class="vertImage" src="photos/eraser.png" onclick="erase()" style="cursor: pointer;"></li>
-      <li><label for="fileOld" style="cursor: pointer;"><img title="Upload previous work" class="vertImage" src="photos/uploadOldWork.png"></label></li>
-      <li><img title="Erase selected work on files" id="alterFile" class="vertImage" src="photos/text.png" onclick="textBox()" style="cursor: pointer;"></li>
+      <li><img title="Text Box" id="textBox" class="vertImage" src="photos/text.png" onclick="textBox()" style="cursor: pointer;"></li>
     </ul>
 
     <div class="canvasStyle">
       <video id="video" width="1200" height="500" style="position:fixed; z-index: 0;" autoplay></video>
 
       <canvas id="CanvasSave" width="1200" height="500"
-        style="border:1px solid #000000; position: absolute; z-index: -3; top: 0px; left: 0px">
+        style="border:1px solid #000000; position: absolute; z-index: -2; top: 0px; left: 0px">
         Your browser does not support the canvas element.
       </canvas>
 
@@ -70,7 +71,7 @@
       </canvas>
 
       <canvas id="myCanvas" width="1200" height="500"
-        style="border:1px solid #000000; position:absolute; z-index: 0; cursor: crosshair" onmousemove="test(event)">
+        style="border:1px solid #000000; position:absolute; z-index: 0; cursor: crosshair" onmousemove="startingFunction(event)">
         Your browser does not support the canvas element.
       </canvas>
 
@@ -87,8 +88,11 @@
       <button style="border-radius: 10px; cursor: pointer;" id="cameraButtonCancel" onclick="cancel(event)"> Cancel</button>
     <div>
 
-    <input type="number" id="textSize" style="align: center; z-index: 1; width: 40px" value: "20" placeholder="20" onchange="getTextSize()">
-    <input type="text" id="textInput" style="align: center; z-index: 1; width: 400px" onchange="getUserLetters()">
+    <div id="sizeSection">
+      <span>Size</span>
+      <input type="number" id="textSize" style="align: center; z-index: 1; width: 40px" value="20" oninput="getTextSize()">
+    </div>
+    <input type="text" id="textInput" style="align: center; z-index: 1; width: 400px" placeholder="Enter text" oninput="getUserLetters()">
 
     <div id="myModal" class="modal">
       <!-- Modal content -->
@@ -123,9 +127,64 @@
         <div>t = text</div>
         <div>u = undo</div>
       </div>
+
+    </div>
+
+    <div id="lineThicknessSlider" class="modal">
+      <div class="optionModal-content">
+        <input type="range" step="0.5" min="0.5" max="50" value="1" id="thicknessValue" oninput="updateLine()">
+        <span><div id=thicknessNumber>1</div></span>
+        <br>
+        <canvas id="CanvasLine" width="300px" height="100px" style="border:1px solid #000000;"></canvas>
+        <p>Select size of line</p>
+        <button class="button" onclick="closeLineSelector()">Cancel</button>
+        <button class="button Ok" onclick="confirmLine()">Ok</button>
+      </div>
+    </div>
+
+    <div id="color_wheel" class="modal">
+      <div class="optionModal-content">
+        <input class="color_wheel_button" type="color" id="user_color" value="#ff0000" onchange=selected_color()>
+        <p>Select color from above</p>
+        <button class="button" onclick="closeColor()">Cancel</button>
+        <button class="button Ok" onclick="confirmColor()">Ok</button>
+      </div>
+    </div>
+
+    <div id="OldWorkUpload" class="modal">
+      <div class="optionModal-content">
+        <div style="width: 100%; height: 50px; text-align: left;">
+          <div style="display: inline-block; width: 55%; text-align: right;"><button onclick="topSelect()"><label for="fileOld" style="cursor: pointer;">Front Image</label></button></div>
+          <div id="frontConfirmUpload" style="display: none; width: 30%; text-align: left;"><i style="font-size: 15px; color: green"> File uploaded</i></div>
+        </div>
+        <div style="width: 100%; height: 50px; text-align: left;">
+          <div style="display: inline-block; width: 55%; text-align: right;"><button onclick="bottomSelect()"><label for="fileOld" style="cursor: pointer;">Back Image</label></button></div>
+          <div id="backConfirmUpload" style="display: none; width: 30%; text-align: left;"><i style="font-size: 15px; color: green"> File uploaded</i></div>
+        </div>
+        <br>
+        <button class="button" onclick="cancelUpload()">Cancel</button>
+        <button class="button Ok" onclick="confirmUpload()">Ok</button>
+      </div>
     </div>
 
     <style>
+
+    .color_wheel_button {
+      width: 80%;
+      height: 100px;
+      text-align: center;
+    }
+
+    .optionModal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      height: 400px;
+      overflow: auto;
+      text-align: center;
+    }
 
     /* The Modal (background) */
     .modal {
@@ -285,6 +344,8 @@
       .purple_color {background-color: #9700FF; width: 100%; height:25px;}
       .cyan_color {background-color: #00FFDF; width: 100%; height:25px;}
       .orange_color {background-color: #FFA100; width: 100%; height:25px;}
+      .select_color {background-color: #918D8D; width: 100%; height:25px;}
+      .Ok {background-color: green; width: 50px; height: 50px; color: white;}
       .eraser {background-color: #f576b3;}
       .selected {background-color: #dedede; color: black; border: 2px solid black;}
       .upload {background-color: #ffffff; color: black; border: 2px solid black; width:auto;}

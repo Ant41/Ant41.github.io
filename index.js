@@ -10,95 +10,31 @@ var ctxTemp = canvasTemp.getContext("2d");
 var canvasSave = document.getElementById("CanvasSave");
 var ctxSave = canvasSave.getContext("2d");
 
-var background;
+var canvasLine = document.getElementById("CanvasLine");
+var ctxLine = canvasLine.getContext("2d");
 
-var video = document.getElementById('video');
+////////////initial settings
+document.getElementById("cameraButton").style.display = "none"; //or "visible"
+document.getElementById("cameraButtonCancel").style.display = "none"; //or "visible"
+document.getElementById("backButton").disabled = true;
 
-var scaleBy = window.devicePixelRatio;
-var w = canvas.width;
-var h = canvas.height;
-resizeCanvas();
-function resizeCanvas(){
-  canvas.width = w * scaleBy; //2400px, this is the resolution of the drawing
-  canvas.height = h * scaleBy;
-  canvas.style.width = w + 'px'; //1200 px, this is shown on screen
-  canvas.style.height = h + 'px';
-  canvasBack.width = w * scaleBy;
-  canvasBack.height = h * scaleBy;
-  canvasBack.style.width = w + 'px';
-  canvasBack.style.height = h + 'px';
-  canvasTemp.width = w * scaleBy;
-  canvasTemp.height = h * scaleBy;
-  canvasTemp.style.width = w + 'px';
-  canvasTemp.style.height = h + 'px';
-  canvasSave.width = w * scaleBy;
-  canvasSave.height = h * scaleBy;
-  canvasSave.style.width = w + 'px';
-  canvasSave.style.height = h + 'px';
-  ctx.scale(scaleBy, scaleBy); //now one CSS unit is equal to 2 actual pixels, ensures that drawings look correct
-  ctxBack.scale(scaleBy, scaleBy);
-  ctxTemp.scale(scaleBy, scaleBy);
-  ctxSave.scale(scaleBy, scaleBy);
-}
-
+//text formatting
+ctx.strokeStyle = "#000000"; //default
+ctx.fillStyle = "#000000"; //default
+ctx.lineWidth = 1; //default
 ctx.font = "20px Arial";
 ctxBack.font = "20px Arial";
 ctxTemp.font = "20px Arial";
-
 var fontSize = 20;
 
-var topSheet = true;
-var bottomSheet = false;
-
-function topDraw(){
-  document.getElementById("top").style.border = "4px solid #2AD3D7";
-  document.getElementById("bottom").style.border = "0px";
-  topSheet = true;
-  bottomSheet = false;
-}
-
-function bottomDraw(){
-  document.getElementById("bottom").style.border = "4px solid #2AD3D7";
-  document.getElementById("top").style.border = "0px";
-  topSheet = false;
-  bottomSheet = true;
-}
+window.onload = function(event) {
+  ctxSave.fillStyle = "white";
+  ctxSave.fillRect(0,0,canvas.width,canvas.height);
+};
 
 window.onbeforeunload = function(event) {
   event.returnValue = "Are you sure you want to leave the page?";
 };
-
-///////////hot key section
-
-document.addEventListener('keydown', hotKey);
-
-function hotKey(){
-  key = event.key; //or try keyCode
-  //console.log(key);
-
-  if(key == 'w'){ //w
-    penSwitch();
-  }
-  if(key == 'c'){ //c
-    circSwitch();
-  }
-  if(key == 's'){ //s
-    straightSwitch();
-  }
-  if(key == 'r'){ //r
-    rectSwitch();
-  }
-  if(key == 'e'){
-    erase();
-  }
-  if(key == 't'){
-    textBox();
-  }
-  if(key == 'u'){
-    undo();
-  }
-}
-
 
 /////////////pop up help section
 var modal = document.getElementById("myModal");
@@ -125,19 +61,232 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
+//////////////
 
-
-////////////initial settings
-ctx.strokeStyle = "#000000"; //default
-ctx.fillStyle = "#000000"; //default
-ctx.lineWidth = 1; //default
-
-document.getElementById("cameraButton").style.display = "none"; //or "visible"
-document.getElementById("cameraButtonCancel").style.display = "none"; //or "visible"
-document.getElementById("backButton").disabled = true;
-
+//backup of canvas
 var lastImageFront;
 var lastImageBack;
+
+function startingFunction(event){
+  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
+  preserveLineProperties();
+  if (penMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', turnOn); //activates when key is pressed only
+    document.addEventListener('keyup', turnOff); //activates when key is pressed only
+    document.removeEventListener('keydown', firstPoint);
+    document.removeEventListener('keyup', secondPoint);
+    document.removeEventListener('keydown', centerPoint);
+    document.removeEventListener('keyup', radiusLength);
+    document.removeEventListener('mousemove', displayTextBox);
+    draw(event);
+  }
+  if(eraseMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    erasing(event);
+  }
+  if(rectMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    rectDraw(event);
+  }
+  if(circMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', centerPoint);
+    document.addEventListener('keyup', radiusLength);
+    document.removeEventListener('mousemove', displayTextBox);
+    circDraw(event);
+  }
+  if(straightMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    if(gridState == true){
+      topDraw();
+    }
+    straightDraw(event);
+  }
+  if(highlightMode == true){
+    lineAlpha = "50";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    straightDraw(event);
+  }
+  if(textMode == true){
+    lineAlpha = "FF";
+    topDraw();
+    document.addEventListener('keydown', firstPoint);
+    //document.addEventListener('keydown', getUserLetters);
+    document.addEventListener('mousemove', displayTextBox);
+    ctx.font = `${fontSize}px Arial`;
+    ctxBack.font = `${fontSize}px Arial`;
+    ctxTemp.font = `${fontSize}px Arial`;
+    textBoxEntry(event);
+  }
+  if(moveDrawingMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    moveDrawingMain(event);
+  }
+  if(copyDrawingMode == true){
+    lineAlpha = "FF";
+    document.addEventListener('keydown', firstPoint);
+    document.addEventListener('keyup', secondPoint);
+    document.removeEventListener('mousemove', displayTextBox);
+    copyDrawingMain(event);
+  }
+}
+
+//resizing canvas to have sharp image
+var scaleBy = window.devicePixelRatio;
+var w = canvas.width;
+var h = canvas.height;
+resizeCanvas();
+
+function resizeCanvas(){
+  canvas.width = w * scaleBy; //2400px, this is the resolution of the drawing
+  canvas.height = h * scaleBy;
+  canvas.style.width = w + 'px'; //1200 px, this is shown on screen
+  canvas.style.height = h + 'px';
+  canvasBack.width = w * scaleBy;
+  canvasBack.height = h * scaleBy;
+  canvasBack.style.width = w + 'px';
+  canvasBack.style.height = h + 'px';
+  canvasTemp.width = w * scaleBy;
+  canvasTemp.height = h * scaleBy;
+  canvasTemp.style.width = w + 'px';
+  canvasTemp.style.height = h + 'px';
+  canvasSave.width = w * scaleBy;
+  canvasSave.height = h * scaleBy;
+  canvasSave.style.width = w + 'px';
+  canvasSave.style.height = h + 'px';
+  ctx.scale(scaleBy, scaleBy); //now one CSS unit is equal to 2 actual pixels, ensures that drawings look correct
+  ctxBack.scale(scaleBy, scaleBy);
+  ctxTemp.scale(scaleBy, scaleBy);
+  ctxSave.scale(scaleBy, scaleBy);
+}
+
+var topSheet = true;
+var bottomSheet = false;
+
+function topDraw(){
+  document.getElementById("top").style.border = "4px solid #2AD3D7";
+  document.getElementById("bottom").style.border = "0px";
+  topSheet = true;
+  bottomSheet = false;
+}
+
+function bottomDraw(){
+  document.getElementById("bottom").style.border = "4px solid #2AD3D7";
+  document.getElementById("top").style.border = "0px";
+  topSheet = false;
+  bottomSheet = true;
+}
+
+var uploadLevel
+
+function topSelect(){
+  uploadLevel = 1;
+}
+
+function bottomSelect(){
+  uploadLevel = 0;
+}
+
+//grid drawing
+var gridState = false;
+var gridIndex;
+var gridSpacing = 15;
+var snapToGrid = false
+
+function gridToggle(){
+  gridState = !gridState
+  if(gridState == true){
+    drawGrid();
+  }
+  else {
+    ctxSave.clearRect(0,0,canvas.width,canvas.height);
+    ctxSave.fillStyle = "white";
+    ctxSave.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+function drawGrid() {
+  ctxSave.clearRect(0,0,canvas.width,canvas.height);
+  ctxSave.fillStyle = "white";
+  ctxSave.fillRect(0,0,canvas.width,canvas.height);
+  ctxSave.lineWidth = 1;
+  ctxSave.strokeStyle = "#DEDEDE";
+  gridIndex = 0;
+  while(gridIndex < canvas.width) {
+    ctxSave.beginPath();
+    ctxSave.moveTo(gridIndex,0);
+    ctxSave.lineTo(gridIndex,canvas.height);
+    ctxSave.stroke();
+    gridIndex = gridIndex + gridSpacing;
+  }
+  gridIndex = 0;
+  while(gridIndex < canvas.height) {
+    ctxSave.beginPath();
+    ctxSave.moveTo(0,gridIndex);
+    ctxSave.lineTo(canvas.width,gridIndex);
+    ctxSave.stroke();
+    gridIndex = gridIndex + gridSpacing;
+  }
+}
+
+///////////hot key section
+document.addEventListener('keydown', hotKey);
+
+function hotKey(){
+
+  key = event.key;
+  //console.log(key);
+
+  if(key == 'w'){ //w
+    penSwitch();
+  }
+  if(key == 'c'){ //c
+    circSwitch();
+  }
+  if(key == 's'){ //s
+    straightSwitch();
+  }
+  if(key == 'r'){ //r
+    rectSwitch();
+  }
+  if(key == 'e'){
+    erase();
+  }
+  if(key == 't'){
+    textBox();
+  }
+  if(key == 'u'){
+    undo();
+  }
+  if(key == 'm'){
+    moveDrawing();
+  }
+  if(key == 'k'){
+    copyDrawing();
+  }
+  if(key == 'g'){
+    snapToGrid = !snapToGrid
+  }
+  if(key == 'h'){
+    console.log("here")
+    highlightSwitch();
+  }
+}
 
 var moveDrawingMode = false;
 
@@ -247,16 +396,37 @@ function pageExtend(){
   ctx.putImageData(lastImageFront, 0, 0);
   ctxBack.putImageData(lastImageBack, 0, 0);
 
+  ctxSave.fillStyle = "white";
+  ctxSave.fillRect(0,0,canvas.width,canvas.height);
+
+  if(gridState == true){
+    drawGrid();
+  }
+
   ctx.font = `${fontSize}px Arial`;
   ctxBack.font = `${fontSize}px Arial`;
   ctxTemp.font = `${fontSize}px Arial`;
+
+  preserveLineProperties();
 }
 
 function undo(){
-  ctx.putImageData(lastImageFront, 0, 0);
-  ctxBack.putImageData(lastImageBack, 0, 0);
   document.getElementById("backButton").disabled = true;
+  if(changedSize == true){
+    h = oldHeight;
+    w = oldWidth;
+    resizeCanvas();
+    ctx.putImageData(lastImageFront, 0, 0);
+    ctxBack.putImageData(lastImageBack, 0, 0);
+    changedSize = false;
+  }
+  else {
+    ctx.putImageData(lastImageFront, 0, 0);
+    ctxBack.putImageData(lastImageBack, 0, 0);
+  }
 }
+
+var video = document.getElementById('video');
 
 function takePhoto(event){
   video = document.querySelector('video');
@@ -372,39 +542,46 @@ function saveImage(){
   var imgDataBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
   var imgDataFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
   var imgData = ctxSave.getImageData(0, 0, canvas.width, canvas.height);
-  //console.log(imgData);
-  for (var i = 0; i < imgDataFront.data.length; i += 4) {
-    if(imgDataFront.data[i + 3] == 0) { //if the front is transparent, make the background visible for that pixel area
-      if(imgDataBack.data[i] == 0 && imgDataBack.data[i+1] == 0 && imgDataBack.data[i+2] == 0 && imgDataBack.data[i+3] == 0) { //if the entire canvas page is set to 0000, just put white for the pixel
-        imgData.data[i] = 255;
-        imgData.data[i+1] = 255;
-        imgData.data[i+2] = 255;
-        imgData.data[i+3] = 255;
-      }
-      else {
-        imgData.data[i] = imgDataBack.data[i];
-        imgData.data[i+1] = imgDataBack.data[i+1];
-        imgData.data[i+2] = imgDataBack.data[i+2];
-        imgData.data[i+3] = 255;
-      }
-    }
-    else { //front is drawn on
-      if(imgDataFront.data[i] == 0 && imgDataFront.data[i+1] == 0 && imgDataFront.data[i+2] == 0 && imgDataFront.data[i+3] == 0){
-        imgData.data[i] = 255;
-        imgData.data[i+1] = 255;
-        imgData.data[i+2] = 255;
-        imgData.data[i+3] = 255;
-      }
-      else {
-      imgData.data[i] = imgDataFront.data[i];
-      imgData.data[i+1] = imgDataFront.data[i+1];
-      imgData.data[i+2] = imgDataFront.data[i+2];
-      imgData.data[i+3] = 255;
-      }
-    }
-  }
+  // console.log(imgData);
+  // for (var i = 0; i < imgDataFront.data.length; i += 4) {
+  //   if(imgDataFront.data[i + 3] == 0) { //if the front is transparent, make the background visible for that pixel area
+  //     if(imgDataBack.data[i] == 0 && imgDataBack.data[i+1] == 0 && imgDataBack.data[i+2] == 0 && imgDataBack.data[i+3] == 0) { //if the entire canvas page is set to 0000, just put white for the pixel
+  //       imgData.data[i] = 255;
+  //       imgData.data[i+1] = 255;
+  //       imgData.data[i+2] = 255;
+  //       imgData.data[i+3] = 255;
+  //     }
+  //     else {
+  //       imgData.data[i] = imgDataBack.data[i];
+  //       imgData.data[i+1] = imgDataBack.data[i+1];
+  //       imgData.data[i+2] = imgDataBack.data[i+2];
+  //       imgData.data[i+3] = 255;
+  //     }
+  //   }
+  //   else { //front is drawn on
+  //     if(imgDataFront.data[i] == 0 && imgDataFront.data[i+1] == 0 && imgDataFront.data[i+2] == 0 && imgDataFront.data[i+3] == 0){
+  //       imgData.data[i] = 255;
+  //       imgData.data[i+1] = 255;
+  //       imgData.data[i+2] = 255;
+  //       imgData.data[i+3] = 255;
+  //     }
+  //     else {
+  //     imgData.data[i] = imgDataFront.data[i];
+  //     imgData.data[i+1] = imgDataFront.data[i+1];
+  //     imgData.data[i+2] = imgDataFront.data[i+2];
+  //     imgData.data[i+3] = 255;
+  //     }
+  //   }
+  // }
+  //
+  // ctxSave.putImageData(imgData, 0, 0);
 
-  ctxSave.putImageData(imgData, 0, 0);
+  ctxSave.drawImage(canvasBack,0,0,canvas.width/scaleBy,canvas.height/scaleBy); //drawImage uses the canvas's intrinsic size in CSS pixels to draw, not HTML size
+  ctxSave.drawImage(canvas,0,0,canvas.width/scaleBy,canvas.height/scaleBy);
+
+  // canvasSave.style.height = canvas.height/scaleBy;
+  // canvasSave.style.width = canvas.width/scaleBy;
+
   // var image = canvasSave.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
   // window.location.href = image;
   // ctxSave.clearRect(0,0,canvasSave.width,canvasSave.height);
@@ -441,64 +618,8 @@ function saveImage(){
     );
   });
   URL.revokeObjectURL(url);
-}
 
-function test(event){
-
-  ctxTemp.clearRect(0,0,canvasTemp.width,canvasTemp.height);
-  if (penMode == true){
-    document.removeEventListener('keydown', firstPoint);
-    document.removeEventListener('keyup', secondPoint);
-    document.removeEventListener('keydown', centerPoint);
-    document.removeEventListener('keyup', radiusLength);
-    document.removeEventListener('mousemove', displayTextBox);
-    draw(event);
-  }
-  if(eraseMode == true){
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-    document.removeEventListener('mousemove', displayTextBox);
-    erasing(event);
-  }
-  if(rectMode == true){
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-    document.removeEventListener('mousemove', displayTextBox);
-    rectDraw(event);
-  }
-  if(circMode == true){
-    document.addEventListener('keydown', centerPoint);
-    document.addEventListener('keyup', radiusLength);
-    document.removeEventListener('mousemove', displayTextBox);
-    circDraw(event);
-  }
-  if(straightMode == true){
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-    document.removeEventListener('mousemove', displayTextBox);
-    straightDraw(event);
-  }
-  if(textMode == true){
-    document.addEventListener('keydown', firstPoint);
-    //document.addEventListener('keydown', getUserLetters);
-    document.addEventListener('mousemove', displayTextBox);
-    ctx.font = `${fontSize}px Arial`;
-    ctxBack.font = `${fontSize}px Arial`;
-    ctxTemp.font = `${fontSize}px Arial`;
-    textBoxEntry(event);
-  }
-  if(moveDrawingMode == true){
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-    document.removeEventListener('mousemove', displayTextBox);
-    moveDrawingMain(event);
-  }
-  if(copyDrawingMode == true){
-    document.addEventListener('keydown', firstPoint);
-    document.addEventListener('keyup', secondPoint);
-    document.removeEventListener('mousemove', displayTextBox);
-    copyDrawingMain(event);
-  }
+  preserveLineProperties();
 }
 
 function penSwitch(){
@@ -509,6 +630,7 @@ function penSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = false;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
@@ -516,8 +638,9 @@ function penSwitch(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -530,6 +653,7 @@ function rectSwitch(){
   rectMode = true;
   circMode = false;
   straightMode = false;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
@@ -537,8 +661,9 @@ function rectSwitch(){
   document.getElementById("rectangle").style.border = "4px solid #2AD3D7";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -551,6 +676,7 @@ function circSwitch(){
   rectMode = false;
   circMode = true;
   straightMode = false;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
@@ -558,8 +684,9 @@ function circSwitch(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "4px solid #2AD3D7";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -572,6 +699,7 @@ function straightSwitch(){
   rectMode = false;
   circMode = false;
   straightMode = true;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = false;
@@ -579,8 +707,9 @@ function straightSwitch(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "4px solid #2AD3D7";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -593,7 +722,7 @@ function textBox(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  straightMode = false;
+  highlightMode = false;
   textMode = true;
   moveDrawingMode = false;
   copyDrawingMode = false;
@@ -601,8 +730,9 @@ function textBox(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "4px solid #2AD3D7";
+  document.getElementById("textBox").style.border = "4px solid #2AD3D7";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -615,7 +745,7 @@ function moveDrawing(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  straightMode = false;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = true;
   copyDrawingMode = false;
@@ -623,8 +753,9 @@ function moveDrawing(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "4px solid #2AD3D7";
   document.getElementById("copyDrawing").style.border = "0px";
 }
@@ -637,7 +768,7 @@ function copyDrawing(){
   rectMode = false;
   circMode = false;
   straightMode = false;
-  straightMode = false;
+  highlightMode = false;
   textMode = false;
   moveDrawingMode = false;
   copyDrawingMode = true;
@@ -645,34 +776,127 @@ function copyDrawing(){
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "4px solid #2AD3D7";
 }
 
-function fineMode() {
-  ctx.lineWidth = 1;
-  ctxBack.lineWidth = 1;
-  document.getElementById("fine").style.border = "4px solid #2AD3D7";
-  document.getElementById("normal").style.border = "0px";
-  document.getElementById("thick").style.border = "0px";
+function highlightSwitch(){
+  part1 = 0;
+  part2 = 0;
+  penMode = false;
+  eraseMode = false;
+  rectMode = false;
+  circMode = false;
+  straightMode = false;
+  highlightMode = true;
+  textMode = false;
+  moveDrawingMode = false;
+  copyDrawingMode = false;
+  document.getElementById("pen").style.border = "0px";
+  document.getElementById("rectangle").style.border = "0px";
+  document.getElementById("circle").style.border = "0px";
+  document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "4px solid #2AD3D7";
+  document.getElementById("eraser").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
+  document.getElementById("moveDrawing").style.border = "0px";
+  document.getElementById("copyDrawing").style.border = "0px";
 }
 
-function normalMode() {
-  ctx.lineWidth = 5;
-  ctxBack.lineWidth = 5;
-  document.getElementById("fine").style.border = "0px";
-  document.getElementById("normal").style.border = "4px solid #2AD3D7";
-  document.getElementById("thick").style.border = "0px";
+// function fineMode() {
+//   ctx.lineWidth = 1;
+//   ctxBack.lineWidth = 1;
+//   ctxTemp.lineWidth = 1;
+//   document.getElementById("fine").style.border = "4px solid #2AD3D7";
+//   document.getElementById("normal").style.border = "0px";
+//   document.getElementById("thick").style.border = "0px";
+// }
+//
+// function normalMode() {
+//   ctx.lineWidth = 5;
+//   ctxBack.lineWidth = 5;
+//   ctxTemp.lineWidth = 5;
+//   document.getElementById("fine").style.border = "0px";
+//   document.getElementById("normal").style.border = "4px solid #2AD3D7";
+//   document.getElementById("thick").style.border = "0px";
+// }
+//
+// function thickMode() {
+//   ctx.lineWidth = 10;
+//   ctxBack.lineWidth = 10;
+//   ctxTemp.lineWidth = 10;
+//   document.getElementById("fine").style.border = "0px";
+//   document.getElementById("normal").style.border = "0px";
+//   document.getElementById("thick").style.border = "4px solid #2AD3D7";
+// }
+
+function selectThickness() {
+  document.getElementById("lineThicknessSlider").style.display = "inline";
 }
 
-function thickMode() {
-  ctx.lineWidth = 10;
-  ctxBack.lineWidth = 10;
-  document.getElementById("fine").style.border = "0px";
-  document.getElementById("normal").style.border = "0px";
-  document.getElementById("thick").style.border = "4px solid #2AD3D7";
+function updateLine(){
+  ctxLine.clearRect(0,0,canvasLine.width,canvasLine.height);
+  document.getElementById("thicknessNumber").innerHTML = document.getElementById("thicknessValue").value;
+  ctxLine.lineWidth = document.getElementById("thicknessValue").value;
+  ctxLine.beginPath();
+  ctxLine.moveTo(50,50);
+  ctxLine.lineTo(250,50);
+  ctxLine.stroke();
+  ctxLine.closePath();
+}
+
+function confirmLine(){
+  penThickness = document.getElementById("thicknessValue").value/2;
+  ctx.lineWidth = document.getElementById("thicknessValue").value;
+  ctxBack.lineWidth = document.getElementById("thicknessValue").value;
+  ctxTemp.lineWidth = document.getElementById("thicknessValue").value;
+  document.getElementById("lineThicknessSlider").style.display = "none";
+}
+
+function closeLineSelector(){
+  document.getElementById("thicknessNumber").innerHTML = penThickness*2;
+  document.getElementById("thicknessValue").value = penThickness*2;
+  document.getElementById("lineThicknessSlider").style.display = "none";
+}
+
+function preserveLineProperties(){
+  ctx.lineWidth = document.getElementById("thicknessValue").value
+  ctxBack.lineWidth = document.getElementById("thicknessValue").value
+  ctxTemp.lineWidth = document.getElementById("thicknessValue").value
+
+  if(colourCount == 1) {
+    black();
+  }
+  else if(colourCount == 2) {
+    red();
+  }
+  else if(colourCount == 3) {
+    yellow();
+  }
+  else if(colourCount == 4) {
+    pink();
+  }
+  else if(colourCount == 5) {
+    purple();
+  }
+  else if(colourCount == 6) {
+    cyan();
+  }
+  else if(colourCount == 7) {
+    orange();
+  }
+  else if(colourCount == 8) {
+    blue();
+  }
+  else if(colourCount == 9) {
+    green();
+  }
+  else if(colourCount == 10) {
+    selected_color();
+  }
 }
 
 var colourCount = 1;
@@ -749,85 +973,164 @@ function changeColour(){
   }
 }
 
+function preserveLineProperties(){
+  if(colourCount == 1) {
+    black();
+  }
+  else if(colourCount == 2) {
+    red();
+  }
+  else if(colourCount == 3) {
+    yellow();
+  }
+  else if(colourCount == 4) {
+    pink();
+  }
+  else if(colourCount == 5) {
+    purple();
+  }
+  else if(colourCount == 6) {
+    cyan();
+  }
+  else if(colourCount == 7) {
+    orange();
+  }
+  else if(colourCount == 8) {
+    blue();
+  }
+  else if(colourCount == 9) {
+    green();
+  }
+  else if(colourCount == 10) {
+    selected_color();
+  }
+}
+
 function blue(){
-  ctx.strokeStyle = "#008bf5";
-  ctx.fillStyle = "#008bf5";
+  ctx.strokeStyle = "#008bf5" + lineAlpha;
+  ctx.fillStyle = "#008bf5" + lineAlpha;
   ctxBack.strokeStyle = "#008bf5";
   ctxBack.fillStyle = "#008bf5";
+  ctxTemp.strokeStyle = "#008bf5";
+  ctxTemp.fillStyle = "#008bf5";
   document.getElementById("color").style.border = "4px solid #008bf5";
   colourCount = 8;
 }
 
 function green(){
-  ctx.strokeStyle = "#0ac235";
-  ctx.fillStyle = "#0ac235";
+  ctx.strokeStyle = "#0ac235" + lineAlpha;
+  ctx.fillStyle = "#0ac235" + lineAlpha;
   ctxBack.strokeStyle = "#0ac235";
   ctxBack.fillStyle = "#0ac235";
+  ctxTemp.strokeStyle = "#0ac235";
+  ctxTemp.fillStyle = "#0ac235";
   document.getElementById("color").style.border = "4px solid #0ac235";
   colourCount = 9;
 }
 
 function red(){
-  ctx.strokeStyle = "#de0404";
-  ctx.fillStyle = "#de0404";
+  ctx.strokeStyle = "#de0404" + lineAlpha;
+  ctx.fillStyle = "#de0404" + lineAlpha;
   ctxBack.strokeStyle = "#de0404";
   ctxBack.fillStyle = "#de0404";
+  ctxTemp.strokeStyle = "#de0404";
+  ctxTemp.fillStyle = "#de0404";
   document.getElementById("color").style.border = "4px solid #de0404";
   colourCount = 2;
 }
 
 function black(){
-  ctx.strokeStyle = "#000000";
-  ctx.fillStyle = "#000000";
+  ctx.strokeStyle = "#000000" + lineAlpha;
+  ctx.fillStyle = "#000000" + lineAlpha;
   ctxBack.strokeStyle = "#000000";
   ctxBack.fillStyle = "#000000";
+  ctxTemp.strokeStyle = "#000000";
+  ctxTemp.fillStyle = "#000000";
   document.getElementById("color").style.border = "4px solid #000000";
   colourCount = 1;
 }
 
 function yellow(){
-  ctx.strokeStyle = "#e6de0b";
-  ctx.fillStyle = "#e6de0b";
+  ctx.strokeStyle = "#e6de0b" + lineAlpha;
+  ctx.fillStyle = "#e6de0b" + lineAlpha;
   ctxBack.strokeStyle = "#e6de0b";
   ctxBack.fillStyle = "#e6de0b";
+  ctxTemp.strokeStyle = "#e6de0b";
+  ctxTemp.fillStyle = "#e6de0b";
   document.getElementById("color").style.border = "4px solid #e6de0b";
   colourCount = 3;
 }
 
 function pink(){
-  ctx.strokeStyle = "#EE37DB";
-  ctx.fillStyle = "#EE37DB";
+  ctx.strokeStyle = "#EE37DB" + lineAlpha;
+  ctx.fillStyle = "#EE37DB" + lineAlpha;
   ctxBack.strokeStyle = "#EE37DB";
   ctxBack.fillStyle = "#EE37DB";
+  ctxTemp.strokeStyle = "#EE37DB";
+  ctxTemp.fillStyle = "#EE37DB";
   document.getElementById("color").style.border = "4px solid #EE37DB";
   colourCount = 4;
 }
 
 function purple(){
-  ctx.strokeStyle = "#9700FF";
-  ctx.fillStyle = "#9700FF";
+  ctx.strokeStyle = "#9700FF" + lineAlpha;
+  ctx.fillStyle = "#9700FF" + lineAlpha;
   ctxBack.strokeStyle = "#9700FF";
   ctxBack.fillStyle = "#9700FF";
+  ctxTemp.strokeStyle = "#9700FF";
+  ctxTemp.fillStyle = "#9700FF";
   document.getElementById("color").style.border = "4px solid #9700FF";
   colourCount = 5;
 }
 
 function cyan(){
-  ctx.strokeStyle = "#00FFDF";
-  ctx.fillStyle = "#00FFDF";
+  ctx.strokeStyle = "#00FFDF" + lineAlpha;
+  ctx.fillStyle = "#00FFDF" + lineAlpha;
   ctxBack.strokeStyle = "#00FFDF";
   ctxBack.fillStyle = "#00FFDF";
+  ctxTemp.strokeStyle = "#00FFDF";
+  ctxTemp.fillStyle = "#00FFDF";
   document.getElementById("color").style.border = "4px solid #00FFDF";
   colourCount = 6;
 }
 
 function orange(){
-  ctx.strokeStyle = "#FFA100";
-  ctx.fillStyle = "#FFA100";
+  ctx.strokeStyle = "#FFA100" + lineAlpha;
+  ctx.fillStyle = "#FFA100" + lineAlpha;
   ctxBack.strokeStyle = "#FFA100";
   ctxBack.fillStyle = "#FFA100";
+  ctxTemp.strokeStyle = "#FFA100";
+  ctxTemp.fillStyle = "#FFA100";
   document.getElementById("color").style.border = "4px solid #FFA100";
   colourCount = 7;
+}
+
+var custom_color;
+
+function selected_color(){
+  colourCount = 10;
+  custom_color = document.getElementById("user_color").value
+  ctx.strokeStyle = custom_color + lineAlpha;
+  ctx.fillStyle = custom_color + lineAlpha;
+  ctxBack.strokeStyle = custom_color;
+  ctxBack.fillStyle = custom_color;
+  ctxTemp.strokeStyle = custom_color;
+  ctxTemp.fillStyle = custom_color;
+  custom_color = "4px solid "+custom_color;
+  document.getElementById("color").style.border = custom_color;
+}
+
+function open_colorSelector(){
+  document.getElementById("color_wheel").style.display = "inline";
+}
+
+function closeColor(){
+  document.getElementById("color_wheel").style.display = "none";
+}
+
+function confirmColor(){
+  selected_color();
+  document.getElementById("color_wheel").style.display = "none";
 }
 
 var background;
@@ -863,23 +1166,18 @@ function uploading(event){
       }
   }
   reader.readAsDataURL(file);
+  event.target.value = ""; //allows for files to be selected more than one time in a row
 }
 
 function uploadOldWork(){
-  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
-  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  lastImageBackTemp = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFrontTemp = ctx.getImageData(0, 0, canvas.width, canvas.height);
   var file = event.target.files[0];
   var reader  = new FileReader();
   reader.onloadend = function (e) {
       background = new Image();
       background.src = e.target.result;
       background.onload = function(ev) {
-        if(background.height >= 500){
-          canvas.height = background.height;
-          canvasBack.height = background.height;
-          canvasTemp.height = background.height;
-          canvasSave.height = background.height;
-        }
 
         w = background.width/scaleBy;
         h = background.height/scaleBy;
@@ -900,26 +1198,49 @@ function uploadOldWork(){
         canvasTemp.height = h*scaleBy;
         canvasSave.height = h*scaleBy;
 
-        if(topSheet == true){ //if uploading top layer of work
+        if(uploadLevel == 1){ //if uploading top layer of work
+          document.getElementById("frontConfirmUpload").style.display = "inline-block";
           ctx.drawImage(background,0,0,canvas.width,canvas.height);
           ctx.scale(scaleBy, scaleBy);
           ctxBack.scale(scaleBy, scaleBy);
           ctxTemp.scale(scaleBy, scaleBy);
           ctxSave.scale(scaleBy, scaleBy);
-          ctxBack.putImageData(lastImageBack, 0, 0);
+          ctxBack.putImageData(lastImageBackTemp, 0, 0);
         }
-        else { //if uploading back layer of work
+        else if(uploadLevel == 0) { //if uploading back layer of work
+          document.getElementById("backConfirmUpload").style.display = "inline-block";
           ctxBack.drawImage(background,0,0,canvas.width,canvas.height);
           ctx.scale(scaleBy, scaleBy);
           ctxBack.scale(scaleBy, scaleBy);
           ctxTemp.scale(scaleBy, scaleBy);
           ctxSave.scale(scaleBy, scaleBy);
-          ctx.putImageData(lastImageFront, 0, 0);
+          ctx.putImageData(lastImageFrontTemp, 0, 0);
         }
 
       }
   }
   reader.readAsDataURL(file);
+  event.target.value = ""; //allows for files to be selected more than one time in a row
+}
+
+function open_oldFileUpload(){
+  document.getElementById("OldWorkUpload").style.display = "inline";
+  uploadLevel = -1;
+  lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
+  lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
+}
+
+function cancelUpload(){
+  if(uploadLevel != -1){
+    undo();
+  }
+  document.getElementById("OldWorkUpload").style.display = "none";
+}
+
+function confirmUpload(){
+  document.getElementById("OldWorkUpload").style.display = "none";
+  document.getElementById("frontConfirmUpload").style.display = "none";
+  document.getElementById("backConfirmUpload").style.display = "none";
 }
 
 function preview(){
@@ -959,24 +1280,34 @@ function finishPhotoResize(){
   document.removeEventListener('mousedown', finishPhotoResize);
 }
 
+var oldHeight;
+var oldWidth;
+var changedSize = false;
+
 function clearBack() {
   lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
   lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
   document.getElementById("backButton").disabled = false;
   ctxBack.clearRect(0,0,canvasBack.width,canvasBack.height);
-  canvasBack.width = 1200;
-  canvasBack.height = 500;
-  canvas.width = 1200;
-  canvas.height = 500;
-  canvasTemp.width = 1200;
-  canvasTemp.height = 500;
-  canvasSave.width = 1200;
-  canvasSave.height = 500;
-  h = canvas.height;
+  changedSize = true;
+  oldHeight = parseInt(canvas.style.height);
+  oldWidth = parseInt(canvas.style.width);
+  h = 500;
+  w = 1200;
   resizeCanvas();
+
+  ctxSave.fillStyle = "white";
+  ctxSave.fillRect(0,0,canvas.width,canvas.height);
+
+  if(gridState == true){
+    drawGrid();
+  }
+
   ctx.font = "20px Arial";
   ctxBack.font = "20px Arial";
   ctxTemp.font = "20px Arial";
+
+  preserveLineProperties();
 }
 
 function clearInk(){
@@ -1028,21 +1359,25 @@ function secondPoint(){
 }
 
 function erase(){
+  part1 = 0;
+  part2 = 0;
   penMode = false;
   eraseMode = true;
   rectMode = false;
   circMode = false;
   straightMode = false;
+  highlightMode = false;
   textMode = false;
   erasing(event);
   document.getElementById("pen").style.border = "0px";
   document.getElementById("rectangle").style.border = "0px";
   document.getElementById("circle").style.border = "0px";
   document.getElementById("straightLine").style.border = "0px";
+  document.getElementById("highlighter").style.border = "0px";
   document.getElementById("eraser").style.border = "4px solid #2AD3D7";
   document.getElementById("moveDrawing").style.border = "0px";
   document.getElementById("copyDrawing").style.border = "0px";
-  document.getElementById("alterFile").style.border = "0px";
+  document.getElementById("textBox").style.border = "0px";
 }
 
 function erasing(event){
@@ -1077,7 +1412,7 @@ var textMode = false;
 var letter;
 var doneTyping = false;
 document.getElementById("textInput").style.display = "none";
-document.getElementById("textSize").style.display = "none";
+document.getElementById("sizeSection").style.display = "none";
 
 function getUserLetters(){
   key = event.key; //or try keyCode
@@ -1086,7 +1421,7 @@ function getUserLetters(){
     doneTyping = true;
   }
   sentence = document.getElementById("textInput").value
-  //console.log(sentence);
+  // console.log(sentence);
 }
 
 function displayTextBox(){
@@ -1110,25 +1445,25 @@ function textBoxEntry(event){
     colorFreeze = true;
     document.addEventListener('keydown', getUserLetters);
     document.getElementById("textInput").style.display = "inline";
-    document.getElementById("textSize").style.display = "inline";
+    document.getElementById("sizeSection").style.display = "inline";
     document.removeEventListener('keydown', hotKey);
     document.removeEventListener('mousemove', displayTextBox);
-    document.addEventListener('keydown', displayText);
+    document.addEventListener('input', displayText);
   }
   if(doneTyping == true){
     colorFreeze = false;
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("textInput").style.display = "none";
-    document.getElementById("textSize").style.display = "none";
+    document.getElementById("sizeSection").style.display = "none";
     ctx.fillText(sentence,xAnchor,yAnchor);
     doneTyping = false;
     part1 = 0;
     document.removeEventListener('keydown', getUserLetters);
     document.removeEventListener('keydown', displayText);
     document.addEventListener('keydown', hotKey);
-    sentence = " ";
-    document.getElementById("textInput").value = " ";
+    sentence = "";
+    document.getElementById("textInput").value = "";
   }
 }
 
@@ -1137,6 +1472,7 @@ function getTextSize() {
   ctx.font = `${fontSize}px Arial`;
   ctxBack.font = `${fontSize}px Arial`;
   ctxTemp.font = `${fontSize}px Arial`;
+  displayText();
 }
 
 var rectMode = false;
@@ -1162,6 +1498,34 @@ function rectDraw(event){
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
+
+    if(gridState == true) {
+      if(y1%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        y1 = y1 - (y1%gridSpacing);
+      }
+      else { //if undershooting the point
+        y1 = y1 - (y1%gridSpacing) + gridSpacing;
+      }
+      if(y2%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        y2 = y2 - (y2%gridSpacing);
+      }
+      else { //if undershooting the point
+        y2 = y2 - (y2%gridSpacing) + gridSpacing;
+      }
+      if(x1%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        x1 = x1 - (x1%gridSpacing);
+      }
+      else { //if undershooting the point
+        x1 = x1 - (x1%gridSpacing) + gridSpacing;
+      }
+      if(x2%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        x2 = x2 - (x2%gridSpacing);
+      }
+      else { //if undershooting the point
+        x2 = x2 - (x2%gridSpacing) + gridSpacing;
+      }
+    }
+
     if(topSheet == true){
       ctx.beginPath();
       //console.log(x1+" "+y1+" "+x2+" "+y2);
@@ -1277,6 +1641,42 @@ function straightDraw(event) {
     lastImageBack = ctxBack.getImageData(0, 0, canvasBack.width, canvasBack.height);
     lastImageFront = ctx.getImageData(0, 0, canvas.width, canvas.height);
     document.getElementById("backButton").disabled = false;
+    if(snapToGrid == true){
+      if(Math.abs(x2-x1) >= Math.abs(y2-y1)){ //close to a horizontal line
+        y2 = y1;
+      }
+      else {
+        x2 = x1;
+      }
+    }
+
+    if(gridState == true) {
+      if(y1%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        y1 = y1 - (y1%gridSpacing);
+      }
+      else { //if undershooting the point
+        y1 = y1 - (y1%gridSpacing) + gridSpacing;
+      }
+      if(y2%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        y2 = y2 - (y2%gridSpacing);
+      }
+      else { //if undershooting the point
+        y2 = y2 - (y2%gridSpacing) + gridSpacing;
+      }
+      if(x1%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        x1 = x1 - (x1%gridSpacing);
+      }
+      else { //if undershooting the point
+        x1 = x1 - (x1%gridSpacing) + gridSpacing;
+      }
+      if(x2%gridSpacing <= gridSpacing/2) { //if overshooting the point
+        x2 = x2 - (x2%gridSpacing);
+      }
+      else { //if undershooting the point
+        x2 = x2 - (x2%gridSpacing) + gridSpacing;
+      }
+    }
+
     if(topSheet == true){
       ctx.beginPath();
       ctx.moveTo(x1,y1);
@@ -1310,6 +1710,9 @@ var lastY;
 var x;
 var y;
 var penMode = true;
+var lineAlpha = "FF";
+var highlightMode = false;
+var penThickness;
 
 function turnOn(){
   if(event.key == "Alt" || event.key == "Control"){
@@ -1335,8 +1738,6 @@ function turnOff(){
 function draw(event){
   x = event.offsetX; //clientX
   y = event.offsetY;
-  document.addEventListener('keydown', turnOn); //activates when key is pressed only
-  document.addEventListener('keyup', turnOff); //activates when key is pressed only
 
   if (initialFlag == 1) { //initial postion
     lastX = x;
@@ -1347,17 +1748,29 @@ function draw(event){
   if (drawOn == true){
     if(topSheet == true){
       ctx.beginPath();
+      ctx.arc(x,y,penThickness,0,2*Math.PI);
+      ctx.fill();
+      ctx.closePath();
+
+      ctx.beginPath();
       ctx.moveTo(lastX,lastY);
       ctx.lineTo(x,y);
       ctx.stroke();
+      ctx.closePath();
       lastX = x;
       lastY = y;
     }
     else {
       ctxBack.beginPath();
+      ctxBack.arc(x,y,penThickness,0,2*Math.PI);
+      ctxBack.fill();
+      ctxBack.closePath();
+
+      ctxBack.beginPath();
       ctxBack.moveTo(lastX,lastY);
       ctxBack.lineTo(x,y);
       ctxBack.stroke();
+      ctxBack.closePath();
       lastX = x;
       lastY = y;
     }
